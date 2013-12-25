@@ -1,0 +1,109 @@
+
+/************************************
+ *
+ */
+#kn_product_text
+{
+	border: 1px dashed #666;
+	font-size: 90%;
+	padding: 12px;
+	margin-bottom: 12px;
+	color: #333;
+}
+
+#kn_product_img_body
+{
+	width: 100%;
+	margin-bottom: 42px;
+	display: table;
+	background-image: url(../img/bg01.gif);
+}
+#kn_product_img_list
+{
+	width:100%;	
+	display: table;
+}
+.kn_product_img_frame
+{
+	width: 123px;
+	border: 1px solid #333;
+	float: left;
+	font-size: 90%;
+	background-color: #FFF;
+}
+.kn_product_image_id
+{
+	font-size: 120%;
+	width: 100%;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #333;
+	text-align: center;
+	vertical-align: middle;
+	font-weight: bold;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	background-color: #CCC;
+	min-height: 20px;
+}
+.kn_product_image_id a {
+	background: url('../img/uploadify-cancel.png') 0 0 no-repeat;
+	float: right;
+	height:	16px;
+	text-indent: -9999px;
+	width: 16px;
+}
+.kn_product_image
+{
+	width: 123px;
+	height:100px;
+	text-align: center;
+	vertical-align: middle;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #333;
+	display:table-cell;
+
+}
+.kn_product_image img
+{
+	vertical-align: middle;
+	border: 1px solid #000;
+}
+.kn_product_image_w_h
+{
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #333;
+	text-align: center;
+	vertical-align: middle;
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+.kn_product_image_priority
+{
+	padding-top: 4px;
+	padding-bottom: 4px;
+	text-align: center;
+	vertical-align: middle;
+	min-height: 24px;
+}
+.kn_product_image_priority input[type="text"]
+{
+	width:30px;
+	ime-mode: inactive;
+}
+
+.kn_product_img_frame_clear
+{
+	clear: left;
+}
+#kn_product_img_list_bottom
+{
+	width: auto;
+	background-color: #FFF;
+	padding: 8px;
+	border-bottom-width: 4px;
+	border-bottom-style: solid;
+	border-bottom-color: #333;
+}
