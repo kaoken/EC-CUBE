@@ -1,8 +1,8 @@
 <?php
 /*
- * This file is part of EC-CUBE
+ * This is a plug-in "ProductImagesAddKN" of EC CUBE.
  *
- * Copyright(c) 2000-2013 kaoken CO.,LTD. All Rights Reserved.
+ * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
  * http://www.kaoken.net/
  *
@@ -29,7 +29,7 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/db/plg_ProductIma
 * @package ProductImagesAddKN
 * @author kaoken
 * @since PHP 5.3　
-* @version 0.1
+* @version 1.0
 */
 class plg_ProductImagesAddKN_DB_Config extends plg_ProductImagesAddKN_DB_Base
 {
@@ -63,7 +63,7 @@ class plg_ProductImagesAddKN_DB_Config extends plg_ProductImagesAddKN_DB_Base
 		// 現在DBに存在するテーブル一覧を取得
 		$where = "id = 0";
 		$arrColumns = $this->DB()->select("*", $this->m_table, $where);
-		if( count($arrColumns) != 0 )
+		if ( count($arrColumns) != 0 )
 		{
 			$this->DataTypeCastFromColumn($arrColumns[0]);
 		 	return $arrColumns[0];
@@ -81,7 +81,7 @@ class plg_ProductImagesAddKN_DB_Config extends plg_ProductImagesAddKN_DB_Base
 	{
 		$this->Begin();
 		$where = "id = 0";		
-		if( $this->DB()->update($this->m_table, $aConfig, $where) === false )
+		if ( $this->DB()->update($this->m_table, $aConfig, $where) === false )
 		{
 			$this->Rollback();
 			return false;
@@ -109,7 +109,7 @@ class plg_ProductImagesAddKN_DB_Config extends plg_ProductImagesAddKN_DB_Base
 			$sqlval = "";
 			if (!in_array($this->m_table, $arrTableList))
 			{
-				if( DB_TYPE  == 'pgsql')
+				if ( DB_TYPE  == 'pgsql')
 				{
 					$sqlval .= "CREATE TABLE ".$this->m_table." (";
 					$sqlval .= "  id                     smallint NOT NULL PRIMARY KEY,";
@@ -137,7 +137,7 @@ class plg_ProductImagesAddKN_DB_Config extends plg_ProductImagesAddKN_DB_Base
 					$sqlval .= ");";
 				}
 				// テーブル作成
-				if( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table);
+				if ( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table);
 				// 初期コンフィグデータ 挿入
 				$sqlval = array(
 					"id"=>0,

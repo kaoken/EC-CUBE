@@ -1,8 +1,8 @@
 <?php
 /*
- * This file is part of EC-CUBE
+ * This is a plug-in "ProductImagesAddKN" of EC CUBE.
  *
- * Copyright(c) 2000-2013 kaoken CO.,LTD. All Rights Reserved.
+ * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
  * http://www.kaoken.net/
  *
@@ -29,7 +29,7 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/db/plg_ProductIma
 * @package ProductImagesAddKN
 * @author kaoken
 * @since PHP 5.3　
-* @version 0.1
+* @version 1.0
 */
 class plg_ProductImagesAddKN_DB_AllowableSize extends plg_ProductImagesAddKN_DB_Base
 {
@@ -57,7 +57,7 @@ class plg_ProductImagesAddKN_DB_AllowableSize extends plg_ProductImagesAddKN_DB_
 		$col = "*";
 		$where = "width = ".$width." AND height = ".$height;
 		$arrColumns = $this->DB()->select($col, $this->m_table, $where);
-		if( count($arrColumns) > 0 )
+		if ( count($arrColumns) > 0 )
 			return true;
 		return false;
 	}
@@ -73,7 +73,7 @@ class plg_ProductImagesAddKN_DB_AllowableSize extends plg_ProductImagesAddKN_DB_
 	{
 		$where = "width != 0 ORDER BY width ASC"; 
 		$ret = $this->DB()->select("*", $this->m_table, $where);
-  		if( count($ret) > 0 )
+  		if ( count($ret) > 0 )
 			return $ret;
 		return array();					 
 	}
@@ -91,7 +91,7 @@ class plg_ProductImagesAddKN_DB_AllowableSize extends plg_ProductImagesAddKN_DB_
 		$where = "width=".$aAddSize['width']." AND height=".$aAddSize['height']." AND not_del = 0";
 		$ret = $this->DB()->delete($this->m_table, $where );
 
-		if( !is_numeric($ret) || $ret == 0 || $this->IsError())
+		if ( !is_numeric($ret) || $ret == 0 || $this->IsError())
 		{
 			$aErrAddSize["insert_failure"]="幅：".$aAddSize['width']." 高さ：".$aAddSize['height']."px は削除できませんでした。";
 			$this->Rollback();
@@ -113,10 +113,10 @@ class plg_ProductImagesAddKN_DB_AllowableSize extends plg_ProductImagesAddKN_DB_
 	 */
 	public function Insert($aAddSize, &$aErrAddSize)
 	{
-		if( $this->DB()->select("*", $this->m_table, "width=".$aAddSize['width']." AND height=".$aAddSize['height']) == null)
+		if ( $this->DB()->select("*", $this->m_table, "width=".$aAddSize['width']." AND height=".$aAddSize['height']) == null)
 		{
 			$this->Begin();
-			if( $this->DB()->insert($this->m_table, $aAddSize) == false || $this->IsError())
+			if ( $this->DB()->insert($this->m_table, $aAddSize) == false || $this->IsError())
 			{
 				$aErrAddSize["insert_failure"]="幅：".$aAddSize['width']."px 高さ：".$aAddSize['height']."px は、追加に失敗しました。";
 				$this->Rollback();
@@ -151,7 +151,7 @@ class plg_ProductImagesAddKN_DB_AllowableSize extends plg_ProductImagesAddKN_DB_
 			$sqlval = "";
 			if (!in_array($this->m_table, $arrTableList))
 			{
-				if( DB_TYPE  == 'pgsql')
+				if ( DB_TYPE  == 'pgsql')
 				{
 					$sqlval .= "CREATE TABLE ".$this->m_table." (";
 					$sqlval .= "  width smallint NOT NULL,";
@@ -169,11 +169,11 @@ class plg_ProductImagesAddKN_DB_AllowableSize extends plg_ProductImagesAddKN_DB_
 					$sqlval .= ");";
 				}
 				// テーブル作成
-				if( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table);
-				if( DB_TYPE  == 'pgsql')
+				if ( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table);
+				if ( DB_TYPE  == 'pgsql')
 				{
 					$sqlval = "CREATE UNIQUE INDEX uc_".$this->m_table."_id ON ".$this->m_table." USING btree (width,height);";
-					if( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table.":CREATE UNIQUE INDEX]");
+					if ( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table.":CREATE UNIQUE INDEX]");
 				}
 				// 初期コンフィグデータ 挿入
 				$aVal["not_del"] = 1;	// 基本サイズは削除できないようにする			

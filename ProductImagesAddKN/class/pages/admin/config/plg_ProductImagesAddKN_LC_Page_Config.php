@@ -83,7 +83,7 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 				if (count($this->arrErr) == 0) {
 					// データ更新
 					//SC_Utils::sfPrintR( $objDefaultFP);
-					if(  ($ret = $dbConfig->Update($arrForm)) === false )
+					if (  ($ret = $dbConfig->Update($arrForm)) === false )
 					{
 						$this->arrErr["update_failure"]=true;  
 					}
@@ -100,7 +100,7 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 				// エラーなしの場合にはデータを更新
 				if (count($this->aErrAddSize) == 0)
 				{		 
-					if( $dbAllowableSize->Insert($aAddSize,$this->aErrAddSize) === true )
+					if ( $dbAllowableSize->Insert($aAddSize,$this->aErrAddSize) === true )
 					{
 						$this->alertMsg = "追加しました。";
 					}
@@ -111,7 +111,7 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 				$this->aErrAddSize = $objAddSizeFP->checkError();
 				if (count($this->aErrAddSize) == 0)
 				{				
-					if( $dbAllowableSize->Delete($aAddSize,$this->aErrAddSize) === true )
+					if ( $dbAllowableSize->Delete($aAddSize,$this->aErrAddSize) === true )
 					{
 						$this->alertMsg = "幅：".$aAddSize['width']." 高さ：".$aAddSize['height']."px を削除しました。";
 					}   
@@ -124,7 +124,7 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 				// エラーなしの場合にはデータを更新
 				if (count($this->aErrAddSize) == 0)
 				{
-					if( ($delNum = $dbCashImg->DeleteOldImgs($aOldCash['days'])) !== -1 )
+					if ( ($delNum = $dbCashImg->DeleteOldImgs($aOldCash['days'],true)) !== -1 )
 					{
 						$this->alertMsg = "{$delNum} 個 キャッシュ画像ファイルを削除しました。";
 					}
@@ -182,7 +182,7 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 		$this->aInfo['cash_img_num'] = $aFileInfo['num'];
 		
 		//
-		if( !isset($aOldCash['days']) )
+		if ( !isset($aOldCash['days']) )
 			$this->aInfo['days'] = 31;
 		else
 			$this->aInfo['days'] = $aOldCash['days'];

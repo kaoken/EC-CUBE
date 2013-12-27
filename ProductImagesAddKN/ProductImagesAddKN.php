@@ -33,7 +33,7 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/plg_ProductImages
 * @package ProductImagesAddKN
 * @author kaoken
 * @since PHP 5.3　
-* @version 0.1
+* @version 1.0
 */
 class ProductImagesAddKN extends SC_Plugin_Base
 {
@@ -131,11 +131,11 @@ class ProductImagesAddKN extends SC_Plugin_Base
 		{
 			$objDBTmp = $knUtil->GetDB($val);
 			
-			if( $isCreate )
+			if ( $isCreate )
 				$isErr = !$objDBTmp->Install($arrPlugin, $arrTableList);
 			else
 				$isErr = !$objDBTmp->Uninstall($arrPlugin, $arrTableList);
-			if( $isErr )
+			if ( $isErr )
 			{
 				$objQ->rollback();
 				break;	
@@ -143,7 +143,7 @@ class ProductImagesAddKN extends SC_Plugin_Base
 			
 			unset($objDBTmp);	
 		}
-		if( !$isErr )$objQ->commit();
+		if ( !$isErr )$objQ->commit();
 		
 		return $isErr;
 	}
@@ -162,7 +162,7 @@ class ProductImagesAddKN extends SC_Plugin_Base
 			$ret .= "・ImageMagickモジュールが有効ではありません。<br>";
 		if (!extension_loaded('json'))
 			$ret .= "・jsonモジュールが有効ではありません。<br>";
-		if( $ret != "" )return $ret;
+		if ( $ret != "" )return $ret;
 	}
 
 	/**
@@ -203,12 +203,12 @@ class ProductImagesAddKN extends SC_Plugin_Base
 	public function LoadClassFileChange(&$classname, &$classpath)
 	{
  		$knUtil = plg_ProductImagesAddKN_Util::GetMy();
-		if($classname == 'SC_UploadFile_Ex')
+		if ($classname == 'SC_UploadFile_Ex')
 		{
 			$classpath = $knUtil->GetPUploadPath('/class', 'SC_UploadFile.php');
 			$classname = 'plg_ProductImagesAddKN_SC_UploadFile';
 		}
-		else if($classname == 'SC_Image_Ex')
+		else if ($classname == 'SC_Image_Ex')
 		{
 			$classpath = $knUtil->GetPUploadPath('/class', 'SC_Image.php');
 			$classname = 'plg_ProductImagesAddKN_SC_Image';
@@ -265,17 +265,17 @@ class ProductImagesAddKN extends SC_Plugin_Base
 //				}
 				
 				// 商品管理 のページ
-				if(strpos($filename, 'products/index.tpl') !== false){
+				if (strpos($filename, 'products/index.tpl') !== false){
 					$path = $knUtil->GetTemplatePath('/products/admin','TdMainListImage');
 					$objTransform->select('.thumbnail', 0)->replaceElement(file_get_contents($path));
 				}
 				// 商品登録・編集画面
-				else if(strpos($filename, 'products/product.tpl') !== false){
+				else if (strpos($filename, 'products/product.tpl') !== false){
 					$path = $knUtil->GetTemplatePath('/products/admin','AddImgForm');
 					$objTransform->select('#products .form', 0)->insertAfter(file_get_contents($path));
 				}
 				// 商品登録・編集の確認画面
-				elseif(strpos($filename, 'products/confirm.tpl') !== false){
+				elseif (strpos($filename, 'products/confirm.tpl') !== false){
 					$path = $knUtil->GetTemplatePath('/products/admin','Confirm');
 					$objTransform->select('.btn-area', 0)->insertBefore(file_get_contents($path));
 				}
@@ -335,9 +335,9 @@ class ProductImagesAddKN extends SC_Plugin_Base
 				// 商品IDに関連する商品画像およびキャッシュ画像削除
 				$product_id = $_POST['product_id'];
 				$dbImg->Begin();		
-				if( $dbImg->DeleteFromProductID($product_id) === false )
+				if ( $dbImg->DeleteFromProductID($product_id) === false )
 				{ $dbImg->Rollback(); return; }
-				if( $dbCash->DeleteFromProductID($product_id) === false )
+				if ( $dbCash->DeleteFromProductID($product_id) === false )
 				{ $dbImg->Rollback(); return; }
 				$dbImg->Commit();
 				break;
@@ -385,27 +385,27 @@ class ProductImagesAddKN extends SC_Plugin_Base
 		
 		$product_id = intval($objPage->arrForm['product_id']);
 		
-		if( $product_id === 0 )
+		if ( $product_id === 0 )
 		{
-			if( $mode == '' || $mode == 'copy')
+			if ( $mode == '' || $mode == 'copy')
 			{  
 				$objPage->isMoveForciblyKn = true;
 				$dbTmpID = $knUtil->GetDB('TmpID');
 				$_SESSION['kn_temp_product_id'] = $dbTmpID->GetCreateID('ProductImg');
-				if( $_SESSION['kn_temp_product_id'] === 0 )
+				if ( $_SESSION['kn_temp_product_id'] === 0 )
 				{
 					// 失敗	
 					SC_Utils_Ex::sfDispSiteError(FREE_ERROR_MSG, "", false,"<b>ProductImagesAddKNプラグインより</b><br /><br />商品画像で使用する一時商品ID作成に失敗しました。"); 
 				}
 				$objPage->arrForm['kn_temp_product_id'] = $_SESSION['kn_temp_product_id'];
 			}
-			else if( isset($_SESSION['kn_temp_product_id']) )
+			else if ( isset($_SESSION['kn_temp_product_id']) )
 			{
 				$objPage->arrForm['kn_temp_product_id'] = $_SESSION['kn_temp_product_id'];
 			}
 			$product_id = intval($objPage->arrForm['kn_temp_product_id']);
 		}
-		else if( isset($_SESSION['kn_temp_product_id']) && $mode != 'complete' )
+		else if ( isset($_SESSION['kn_temp_product_id']) && $mode != 'complete' )
 		{
 			unset($_SESSION['kn_temp_product_id']);
 		}
@@ -427,7 +427,7 @@ class ProductImagesAddKN extends SC_Plugin_Base
 		{	
 			case 'copy' :
 				// 複製
-				if( $this->m_aConfig['product_img_copy'] == 1 )
+				if ( $this->m_aConfig['product_img_copy'] == 1 )
 				{
 					$product_id = intval($_POST['product_id']);
 					$dbImg->CloneFormProductID($product_id,$_SESSION['kn_temp_product_id'],true);	
@@ -440,15 +440,15 @@ class ProductImagesAddKN extends SC_Plugin_Base
 
 				break;
 			case 'complete':
-				if( isset($_SESSION['kn_temp_product_id']) )
+				if ( isset($_SESSION['kn_temp_product_id']) )
 				{
 					$currentID = $_SESSION['kn_temp_product_id'];
 					$dbTmpID->Begin();		
-					if( $dbTmpID->Delete($currentID, 'ProductImg' ) === false )
+					if ( $dbTmpID->Delete($currentID, 'ProductImg' ) === false )
 					{ $dbTmpID->Rollback(); return; }
-					if( $dbImg->ChangeProductID($currentID, $product_id ) === false )
+					if ( $dbImg->ChangeProductID($currentID, $product_id ) === false )
 					{ $dbTmpID->Rollback(); return; }
-					if( $dbCash->ChangeProductID($currentID, $product_id ) === false )
+					if ( $dbCash->ChangeProductID($currentID, $product_id ) === false )
 					{ $dbTmpID->Rollback(); return; }
 					$dbTmpID->Commit();
 					unset($_SESSION['kn_temp_product_id']);

@@ -1,8 +1,8 @@
 <?php
 /*
- * This file is part of EC-CUBE
+ * This is a plug-in "ProductImagesAddKN" of EC CUBE.
  *
- * Copyright(c) 2000-2013 kaoken CO.,LTD. All Rights Reserved.
+ * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
  * http://www.kaoken.net/
  *
@@ -29,7 +29,7 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/db/plg_ProductIma
 * @package ProductImagesAddKN
 * @author kaoken
 * @since PHP 5.3　
-* @version 0.1
+* @version 1.0
 */
 class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 {
@@ -83,13 +83,13 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 	 */
 	public function Get(&$aInfo)
 	{	
-		if( $aInfo['src_file'] != '' )
+		if ( $aInfo['src_file'] != '' )
 			$aInfo['img_file'] = basename($aInfo['src_file']);
 
 		$where = "file_name = '".$this->CreateCashFileName($aInfo)."'";
 		
 		$arrColumns = $this->DB()->select("*", $this->m_table, $where);
-		if( count($arrColumns) == 1 )
+		if ( count($arrColumns) == 1 )
 		{
 			return $arrColumns[0];
 		}
@@ -114,7 +114,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 
 		$this->Begin();
 		$ret = $this->Query($q, array(), false, null, MDB2_PREPARE_MANIP);
-		if( $ret === false || $this->IsError())
+		if ( $ret === false || $this->IsError())
 		{
 			$this->Rollback();
 			return false;	
@@ -129,7 +129,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 	 * @param int	 $currentID 現在の商品ID
 	 * @param int	 $newID	 新しい商品ID
 	 * @param boolean $isTransaction トランザクション処理をするか？
-	 * @return mixi
+	 * @return mixed
 	 */
 	public function ChangeProductID($currentID, $newID, $isTransaction=false)
 	{
@@ -163,7 +163,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 	public function GetNum()
 	{
 		$ret = $this->DB()->select("count(*) as cnt", $this->m_table);
-		if( count($ret) > 0 )
+		if ( count($ret) > 0 )
 			return $ret[0]['cnt'];
 		
 		return 0;
@@ -180,7 +180,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 		$where = 'img_id = '.$aCol['img_id'].' AND width = '.$aCol['width'].' AND height = '.$aCol['height']." AND effect = '".$aCol['effect']."'";
 		$arrColumns = $this->DB()->select("*", $this->m_table, $where);
 
-		if( count($arrColumns) > 0 )
+		if ( count($arrColumns) > 0 )
 		{
 			return $arrColumns[0];
 		}
@@ -195,15 +195,15 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 	 */
 	public function GetFromPrdouctIDAndPriority($aCol)
 	{
-		$prdouctID = intval($prdouctID);
-		$priority = intval($priority);
+        $aCol['product_id'] = intval($aCol['product_id']);
+        $aCol['priority'] = intval($aCol['priority']);
 		
 		$where  = 'width = '.$aCol['width'].' AND height = '.$aCol['height']." AND effect = '".$aCol['effect']."'";
 		$where .= " AND img_id = (";
 		$where .= 'SELECT img_id FROM '.self::TABLE_IMG.' WHERE ';
 		$where .= "product_id = ".$aCol['product_id']." AND priority = ".$aCol['priority'].")";
 		$arrColumns = $this->DB()->select('*', $this->m_table, $where);
-		if( count($arrColumns) == 0 )
+		if ( count($arrColumns) == 0 )
 		{
 			return array();
 		}
@@ -247,7 +247,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 	 */
 	public function DeleteFromImageName($fileName, $isTransaction=false)
 	{
-		if( $fileName == '' )
+		if ( $fileName == '' )
 		{
 			return false;	
 		}
@@ -272,23 +272,25 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 	 * $aVal['s']日以上アクセスされていないファイルを削除
 	 * 
 	 * @param int    $day         任意の値
-	 * @return int 削除された数を返す。失敗、エラー時には-1が返る
+     * @param boolean $isTransaction トランザクション処理をするか？
+     * @return int 削除された数を返す。失敗、エラー時には-1が返る
 	 */
-	public function DeleteOldImgs($day)
+	public function DeleteOldImgs($day,$isTransaction=false)
 	{
 		$day = intval($day);
 		// 先にファイル削除の方が良いので！
 		// $aVal['day']日以上アクセスされていないファイルを削除
 		$knUtil = plg_ProductImagesAddKN_Util::GetMy();
 		$aVal['s'] = 86400*$day;
-		$aVal['cnt'] = 0;
+        $aVal['cnt'] = 0;
+        $aVal['isTransaction'] = $isTransaction;
 		$isErr = !$knUtil->ReadCashImgFileNames($aVal,$this,'DeleteOldImgs_Call',100);
 		
 		// 何らかのトラブルで残ってしまった、レコードもついでに削除
-		if( $day !== 0 && $isErr)
+		if ( $day !== 0 && $isErr)
 		{
 			$where = "";
-			if( DB_TYPE  == 'pgsql')
+			if ( DB_TYPE  == 'pgsql')
 			{
 				$where = "create_tm IN ( SELECT create_tm FROM ".$this->m_table." WHERE ";
 				$where .= "date_part('day',now()-create_tm) <= {$day}";
@@ -302,7 +304,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 			$this->Begin($isTransaction);
 			
 			$ret = $this->DB()->delete($this->m_table, $where);	 
-			if( $ret === false )
+			if ( $ret === false )
 			{
 				$this->Rollback($isTransaction);
 				return -1;	
@@ -325,7 +327,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 	public function DeleteOldImgs_Call(&$val,$dir,&$aFileName)
 	{
 		$delList = '';
-		if( $val['s'] === 0 )
+		if ( $val['s'] === 0 )
 		{
 			foreach($aFileName as $key=>&$name)
 			{
@@ -338,7 +340,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 		{
 			foreach($aFileName as $key=>&$name)
 			{
-				if( (@fileatime($name) + $val['s']) <= time() )
+				if ( (@fileatime($name) + $val['s']) <= time() )
 				{
 					@unlink($name);
 					$delList .= "'{$name}',";
@@ -346,22 +348,22 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 				}
 			}
 		}
-		if( $delList !== '' )
+		if ( $delList !== '' )
 		{
 			$delList = rtrim( $delList, ',');
-			$this->Begin($isTransaction);
+			$this->Begin($val['isTransaction']);
 			//
 			$where = "";
-			if( $val['s'] !== 0 )
+			if ( $val['s'] !== 0 )
 				$where = "file_name IN ({$delList}) ";
 			$ret = $this->DB()->delete($this->m_table, $where);
-			if( $ret === false )
+			if ( $ret === false )
 			{
-				$this->Rollback($isTransaction);
+				$this->Rollback($val['isTransaction']);
 				$val['cnt'] = -1;
 				return false;	
 			}
-			$this->Commit($isTransaction);
+			$this->Commit($val['isTransaction']);
 		}
 		return true;
 	}
@@ -383,7 +385,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 		$knUtil->ReadCashImgFileNames($aVal,$this,'DeleteNegativeProductID_Call',1000,false);
 		
 		$where = "";
-		if( DB_TYPE  == 'pgsql')
+		if ( DB_TYPE  == 'pgsql')
 		{
 			$where = "create_tm IN ( SELECT create_tm FROM ".$this->m_table." WHERE ";
 			$where .= "date_part('hour',now()-create_tm) <= {$elapsedHour}";
@@ -397,7 +399,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 		$this->Begin($isTransaction);
 		
 		$ret = $this->DB()->delete($this->m_table, $where);	 
-		if( $ret === false )
+		if ( $ret === false )
 		{
 			$this->Rollback($isTransaction);
 			return false;	
@@ -419,7 +421,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 	{
 		foreach($aFileName as &$name)
 		{
-			if( (@fileatime($dir.$name) + 3600*$val['hour']) <= time() )
+			if ( (@fileatime($dir.$name) + 3600*$val['hour']) <= time() )
 				@unlink($dir.$name);
 		}
 		return true;
@@ -462,7 +464,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 		$selectQ .= "WHERE p.product_id > 0 AND (d.del_flg = 1 OR d.product_id IS NULL) ";
 		$selectQ .= "GROUP BY p.product_id";
 		$ret = $this->DB()->getAll($selectQ);
-		if( count($ret) > 0 )
+		if ( count($ret) > 0 )
 		{
 			foreach($ret as &$val)
 			{
@@ -513,7 +515,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 		$q .= "WHERE p.product_id > 0 AND (d.del_flg = 1 OR d.product_id IS NULL) ";
 			
 		$ret = $this->DB()->getAll($q);
-		if( count($ret) > 0 )
+		if ( count($ret) > 0 )
 			return $ret[0]['cnt'];
 		return 0;
 	}	
@@ -546,7 +548,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 				$sqlval .= "  create_tm timestamp NOT NULL ";
 				$sqlval .= ");";
 				// テーブル作成
-				if( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table);
+				if ( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table);
 			}
 		}
 		catch (Exception $e)

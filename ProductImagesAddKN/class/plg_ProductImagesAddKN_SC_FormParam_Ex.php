@@ -1,8 +1,8 @@
 <?php
 /*
- * This file is part of EC-CUBE
+ * This is a plug-in "ProductImagesAddKN" of EC CUBE.
  *
- * Copyright(c) 2000-2013 kaoken CO.,LTD. All Rights Reserved.
+ * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
  * http://www.kaoken.net/
  *
@@ -48,14 +48,14 @@ class plg_ProductImagesAddKN_SC_FormParam_Ex extends SC_FormParam_Ex
 	 */
 	public function addParamNumLimit($disp_name, $keyname,$min,$max, $aCheck=array('EXIST_CHECK'))
 	{
-		if( array_key_exists( $keyname, $this->m_numMinMax) ) 
+		if ( array_key_exists( $keyname, $this->m_numMinMax) )
 		{
 			$this->m_numMinMax[$keyname][0] = $min;
 			$this->m_numMinMax[$keyname][1] = $max;
 			return;
 		}
 		$this->m_numMinMax[$keyname] = array($min,$max);
-		if( !array_key_exists( $keyname, $this->arrCheck ) )
+		if ( !array_key_exists( $keyname, $this->arrCheck ) )
 		{
 			$aCheck += array('NUM_CHECK', 'SPTAB_CHECK', 'MAX_LENGTH_CHECK',"MINMAX_CHECK");
 			$lenMin = strlen($min+"");
@@ -125,7 +125,7 @@ class plg_ProductImagesAddKN_SC_FormParam_Ex extends SC_FormParam_Ex
 						}
 						break;
 					case 'MINMAX_CHECK':
-						if( is_numeric($value) && (intval($value) < $this->m_numMinMax[$key][0] || $this->m_numMinMax[$key][1] < intval($value)) ) {
+						if ( is_numeric($value) && (intval($value) < $this->m_numMinMax[$key][0] || $this->m_numMinMax[$key][1] < intval($value)) ) {
 							$arrErr[$key] = '※ 数値の範囲は[' . $this->m_numMinMax[$key][0];
 							$arrErr[$key] .= '～' . $this->m_numMinMax[$key][1].']でなければいけません<br>';
 						}

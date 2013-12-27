@@ -28,7 +28,7 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/util/plg_ProductI
 * @package ProductImagesAddKN
 * @author kaoken
 * @since PHP 5.3　
-* @version 0.1
+* @version 1.0
 */
 class plg_ProductImagesAddKN_SC_Image extends SC_Image
 {

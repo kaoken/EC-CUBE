@@ -1,8 +1,8 @@
 <?php
 /*
- * This file is part of EC-CUBE
+ * This is a plug-in "ProductImagesAddKN" of EC CUBE.
  *
- * Copyright(c) 2000-2013 kaoken CO.,LTD. All Rights Reserved.
+ * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
  * http://www.kaoken.net/
  *
@@ -29,7 +29,7 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/plg_ProductImages
 * @package ProductImagesAddKN
 * @author kaoken
 * @since PHP 5.3　
-* @version 0.1
+* @version 1.0
 */
 class plg_ProductImagesAddKN_PageUtil
 {
@@ -43,7 +43,7 @@ class plg_ProductImagesAddKN_PageUtil
 	 */
 	public function __construct($objImg=null)
 	{
-		if( !is_null($objImg) )
+		if ( !is_null($objImg) )
 			$this->m_objImg = $objImg;		
 		else
 			$this->m_objImg = new plg_ProductImagesAddKN_Img();		
@@ -118,7 +118,7 @@ class plg_ProductImagesAddKN_PageUtil
 	{
 		$aPara['width'] = $w;
 		$aPara['height'] = $h;
-		if( ($aPara['src_file'] = $this->m_objImg->GetImgNameFromImgKeyProductID($product_id,$image_key)) === false )
+		if ( ($aPara['src_file'] = $this->m_objImg->GetImgNameFromImgKeyProductID($product_id,$image_key)) === false )
 		{
 			return $this->m_objImg->DrawErrImageURL(3);
 		}

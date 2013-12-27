@@ -1,8 +1,8 @@
 <?php
 /*
- * This file is part of EC-CUBE
+ * This is a plug-in "ProductImagesAddKN" of EC CUBE.
  *
- * Copyright(c) 2000-2013 kaoken CO.,LTD. All Rights Reserved.
+ * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
  * http://www.kaoken.net/
  *
@@ -29,7 +29,7 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/db/plg_ProductIma
 * @package ProductImagesAddKN
 * @author kaoken
 * @since PHP 5.3　
-* @version 0.1
+* @version 1.0
 */
 class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Base
 {
@@ -72,7 +72,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 		$q .= "WHERE product_id={$product_id})";
 		$ret = $this->Query($q, array(), false, null, MDB2_PREPARE_MANIP);
 		
-		if( $ret === false || $this->IsError() )
+		if ( $ret === false || $this->IsError() )
 		{
 			$this->Rollback($isTransaction);
 			return false;	
@@ -92,16 +92,16 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 	{
 		$this->Begin($isTransaction);
 
-		if( DB_TYPE == 'pgsql')
+		if ( DB_TYPE == 'pgsql')
 		{
 			$aInsert['imgdat'] = pg_escape_bytea($aInsert['imgdat']); 
-			if( $isTransaction )
+			if ( $isTransaction )
 				$this->PsqlLockMyTable('SHARE UPDATE EXCLUSIVE MODE');
 		}
 		else
 		{
 			$aInsert['imgdat'] = bin2hex($aInsert['imgdat']);
-			if( $isTransaction )
+			if ( $isTransaction )
 				$this->MysqlLockMyTable();
 		}
 		
@@ -109,9 +109,9 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 		// 優先順位の番号を作る
 		$where = "product_id = ".$aInsert['product_id'];
 		$ret = $this->DB()->select("max(priority+1) as max", $this->m_table, $where );
-		if( count($ret) > 0 )
+		if ( count($ret) > 0 )
 		{
-			if( $ret[0]['max'] != '' )
+			if ( $ret[0]['max'] != '' )
 				$aInsert['priority'] = $ret[0]['max'];
 		}
 		$aInsert['create_tm'] = 'CURRENT_TIMESTAMP';
@@ -123,17 +123,17 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 		$q .= $this->GetValuesString($aInsert).";";
 		$ret = $this->Query($q, array(), false, null, MDB2_PREPARE_MANIP);
 		
-		if( $ret === false || $this->IsError() )
+		if ( $ret === false || $this->IsError() )
 		{
 			$this->Rollback($isTransaction);
 			return false;	
 		}
-		if( DB_TYPE  == 'pgsql')
+		if ( DB_TYPE  == 'pgsql')
 			$ret = $this->DB()->select("lastval() as id", $this->m_table);
 		else
 			$ret = $this->DB()->select("last_insert_id() as id", $this->m_table);
 
-		if( count($ret) > 0 )
+		if ( count($ret) > 0 )
 		{
 			$this->Commit($isTransaction);
 			return intval($ret[0]['id']);
@@ -150,7 +150,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 	 * @param int	 $img_id		 対象とする商品画像ID
 	 * @param int	 $newPriority	新しい順番の番号
 	 * @param boolean $isTransaction  トランザクション処理をするか？
-	 * @return mixi
+	 * @return mixed
 	 */
 	public function ChangePriority($product_id, $img_id, $newPriority, $isTransaction=false)
 	{
@@ -161,7 +161,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 		$q  = 'UPDATE '.$this->m_table.' SET priority = ';
 		$q .= 'priority*100+10 WHERE product_id = '.$product_id;
 		$ret = $this->Query($q, array(), false, null, MDB2_PREPARE_MANIP);
-		if( $ret === false || $this->IsError() )
+		if ( $ret === false || $this->IsError() )
 		{
 			$this->Rollback($isTransaction);
 			return false;
@@ -170,14 +170,14 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 		$q  = 'UPDATE '.$this->m_table.' SET priority = '.(($newPriority*100+10)-1);
 		$q  .= ' WHERE img_id='.$img_id;
 		$ret = $this->Query($q, array(), false, null, MDB2_PREPARE_MANIP);
-		if( $ret === false || $this->IsError() )
+		if ( $ret === false || $this->IsError() )
 		{
 			$this->Rollback($isTransaction);
 			return false;
 		}
 		// 複数の商品画像の順番を再割り当てする
 		$ret = $this->ReassignThePriority($product_id);
-		if( $ret === false || $this->IsError() )
+		if ( $ret === false || $this->IsError() )
 		{
 			$this->Rollback($isTransaction);
 			return false;
@@ -193,7 +193,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 	 * @param int	 $currentID 現在の商品ID
 	 * @param int	 $newID	 新しい商品ID
 	 * @param boolean $isTransaction トランザクション処理をするか？
-	 * @return mixi
+	 * @return mixed
 	 */
 	public function ChangeProductID($currentID, $newID, $isTransaction=false)
 	{
@@ -217,7 +217,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 	 * 
 	 * @param int	 $product_id 商品ID
 	 * @param boolean $isTransaction トランザクション処理をするか？
-	 * @return mixi
+	 * @return mixed
 	 */
 	public function ReassignThePriority($product_id, $isTransaction=false)
 	{
@@ -249,7 +249,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 	public function DeleteNegativeProductID($elapsedHour, $isTransaction=false)
 	{
 		$where = "";
-		if( DB_TYPE  == 'pgsql')
+		if ( DB_TYPE  == 'pgsql')
 		{
 			$where = "create_tm IN ( SELECT create_tm FROM ".$this->m_table." WHERE ";
 			$where .= "date_part('hour',now()-create_tm) <= {$elapsedHour}";
@@ -262,7 +262,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 
 		$this->Begin($isTransaction);
 		$ret = $this->DB()->delete($this->m_table, $where);	 
-		if( $ret === false )
+		if ( $ret === false )
 		{
 			$this->Rollback($isTransaction);
 			return false;	
@@ -339,7 +339,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 		$q .= "WHERE p.product_id > 0 AND (d.del_flg = 1 OR d.product_id IS NULL) ";
 			
 		$ret = $this->DB()->getAll($q);
-		if( count($ret) > 0 )
+		if ( count($ret) > 0 )
 			return $ret[0]['cnt'];
 		return 0;
 	}
@@ -355,21 +355,21 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 	{
 		$prdouct_id = intval($prdouct_id);
 		$col = "";
-		if( $notReadImgData )
+		if ( $notReadImgData )
 			$col = "img_id,product_id,width,height,mime,priority,create_tm";
 		else
 			$col = "*";
 			
 		$where = "product_id = ".$prdouct_id." ORDER BY priority ASC ";
 		$arrColumns = $this->DB()->select($col, $this->m_table, $where);
-		if( count($arrColumns) == 0 )
+		if ( count($arrColumns) == 0 )
 		{
 			return array();
 		}
 		for($i=0;$i<count($arrColumns);++$i)
 		{
 			$this->DataTypeCastFromColumn($arrColumns[$i]);
-			if( DB_TYPE  == 'pgsql' && !$notReadImgData)
+			if ( DB_TYPE  == 'pgsql' && !$notReadImgData)
 				$arrColumns[$i]['imgdat'] = pg_unescape_bytea($arrColumns[$i]['imgdat']);
 		}
 		return $arrColumns;
@@ -388,20 +388,20 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 		$product_id = intval($product_id);
 		$priority = intval($priority);
 		$col = "";
-		if( $notReadImgData )
+		if ( $notReadImgData )
 			$col = "img_id,product_id,width,height,mime,priority,create_tm";
 		else
 			$col = "*";
 			
 		$where = "product_id = {$prdouct_id} AND priority = {$priority}";
 		$arrColumns = $this->DB()->select($col, $this->m_table, $where);
-		if( count($arrColumns) == 0 )
+		if ( count($arrColumns) == 0 )
 		{
 			return array();
 		}
 
 		$this->DataTypeCastFromColumn($arrColumns[0]);
-		if( DB_TYPE  == 'pgsql' && !$notReadImgData)
+		if ( DB_TYPE  == 'pgsql' && !$notReadImgData)
 			$arrColumns[0]['imgdat'] = pg_unescape_bytea($arrColumns[0]['imgdat']);
 			
 		return $arrColumns[0];
@@ -420,7 +420,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 		$priority = intval($priority);
 		
 		$col = "";
-		if( $notReadImgData )
+		if ( $notReadImgData )
 			$col = "img_id,product_id,width,height,mime,priority,create_tm";
 		else
 			$col = "*";
@@ -428,13 +428,13 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 		$where = "product_id = {$product_id} AND ";
 		$where .= "priority > {$priority} ORDER BY priority";
 		$arrColumns = $this->DB()->select($col, $this->m_table, $where);
-		if( count($arrColumns) == 0 )
+		if ( count($arrColumns) == 0 )
 		{
 			return $arrColumns;
 		}
 		for($i=0;$i<count($arrColumns);$i++)
 		{
-			if( DB_TYPE  == 'pgsql' && !$notReadImgData)
+			if ( DB_TYPE  == 'pgsql' && !$notReadImgData)
 				$arrColumns[$i]['imgdat'] = pg_unescape_bytea($arrColumns[$i]['imgdat']);
 		}
 		
@@ -450,18 +450,18 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 	public function Get($img_id, $notReadImgData = false)
 	{
 		$col = "";
-		if( $notReadImgData )
+		if ( $notReadImgData )
 			$col = "img_id,product_id,width,height,mime,priority,create_tm";
 		else
 			$col = "*";
 			
 		$where = "img_id = ".$img_id;
 		$arrColumns = $this->DB()->select($col, $this->m_table, $where);
-		if( count($arrColumns) == 0 )
+		if ( count($arrColumns) == 0 )
 		{
 			return array();
 		}
-		if( DB_TYPE  == 'pgsql' && !$notReadImgData)
+		if ( DB_TYPE  == 'pgsql' && !$notReadImgData)
 			$arrColumns[0]['imgdat'] = pg_unescape_bytea($arrColumns[0]['imgdat']);
 		return $arrColumns[0];
 	}
@@ -476,7 +476,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 	{
 		$where = "img_id = {$productImgID}";
 		$ret = $this->DB()->select("img_id", $this->m_table, $where);
-		if( count($ret) > 0 )
+		if ( count($ret) > 0 )
 			return true;
 		
 		return false;
@@ -490,7 +490,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 	public function GetNum()
 	{
 		$ret = $this->DB()->select("count(*) as cnt", $this->m_table);
-		if( count($ret) > 0 )
+		if ( count($ret) > 0 )
 			return $ret[0]['cnt'];
 		
 		return 0;
@@ -504,7 +504,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 	public function GetNumFromProductID($product_id)
 	{
 		$ret = $this->DB()->select("count(*) as cnt", $this->m_table, "product_id = {$product_id}");
-		if( count($ret) > 0 )
+		if ( count($ret) > 0 )
 			return intval($ret[0]['cnt']);
 		
 		return 0;
@@ -526,7 +526,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 			if (!in_array($this->m_table, $arrTableList))
 			{
 				$sqlval = "";
-				if( DB_TYPE  == 'pgsql')
+				if ( DB_TYPE  == 'pgsql')
 				{
 					$sqlval .= "CREATE TABLE ".$this->m_table." (";
 					$sqlval .= "  img_id bigserial NOT NULL PRIMARY KEY,";
@@ -554,7 +554,7 @@ class plg_ProductImagesAddKN_DB_ProductImg extends plg_ProductImagesAddKN_DB_Bas
 					$sqlval .= ");";
 				}
 				// テーブル作成
-				if( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table);
+				if ( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table);
 			}
 		}
 		catch (Exception $e)

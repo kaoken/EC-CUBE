@@ -110,7 +110,7 @@ class plg_ProductImagesAddKN_Util
 	 */
 	public function FixIntegerOverflow($size)
 	{
-		if($size < 0)
+		if ($size < 0)
 			$size += 2.0 * (PHP_INT_MAX + 1);
 		return $size;
 	}
@@ -149,13 +149,13 @@ class plg_ProductImagesAddKN_Util
 		static $saClass = array();
 		
 		$className = "plg_".self::PLUGIN_NAME."_DB_".$name;
-		if( array_key_exists($className, $saClass) )
+		if ( array_key_exists($className, $saClass) )
 		{
 			return $saClass[$className];	
 		}
-		if(!class_exists($className)){
+		if (!class_exists($className)){
 			$path = $this->GetPUploadPath('/class/db',"DB_".$name.'.php');
-			if( is_file( $path ) )
+			if ( is_file( $path ) )
 				require_once $path;
 		}
 		
@@ -182,7 +182,7 @@ class plg_ProductImagesAddKN_Util
 	public function DirCreatedToHTML($dirName)
 	{
 		$dirPath = PLUGIN_HTML_REALDIR . self::PLUGIN_NAME."/".$dirName;
-		if( @mkdir($dirPath,0777) === false )
+		if ( @mkdir($dirPath,0777) === false )
 		{
 			SC_Utils_Ex::sfDispSiteError(FREE_ERROR_MSG, '', false, PLUGIN_HTML_REALDIR . self::PLUGIN_NAME . "' 内にディレクトリ'{$dirName}'を作成できませんでした。パーミッションをご確認ください。");
 			return false;
@@ -202,7 +202,7 @@ class plg_ProductImagesAddKN_Util
 		$plginUR = PLUGIN_UPLOAD_REALDIR . self::PLUGIN_NAME."/";
 		$plginHR = PLUGIN_HTML_REALDIR . self::PLUGIN_NAME."/";
 		// ファイルコピー
-		if( @copy($plginUR . $srcFile, $plginHR. $dstFile) === false )
+		if ( @copy($plginUR . $srcFile, $plginHR. $dstFile) === false )
 		{
 			SC_Utils_Ex::sfDispSiteError(FREE_ERROR_MSG, '"', false, $plginHR . '" に"'.$dstFile.'"が書き込めません。パーミッションをご確認ください。');
 			return false;
@@ -221,7 +221,7 @@ class plg_ProductImagesAddKN_Util
 	{
 		if (is_dir($src))
 		{
-			if( @mkdir($dst,0777) === false )
+			if ( @mkdir($dst,0777) === false )
 			{
 				SC_Utils_Ex::sfDispSiteError(FREE_ERROR_MSG, '', false, $dst . "' に書き込めません。パーミッションをご確認ください。");
 				return false;
@@ -232,13 +232,13 @@ class plg_ProductImagesAddKN_Util
 			{
 				if (($file != ".") && ($file != ".."))
 				{
-					if( self::CopyRecursive("$src/$file", "$dst/$file") === false )
+					if ( self::CopyRecursive("$src/$file", "$dst/$file") === false )
 						return false;
 				}
 			}
 		}
 		else if (file_exists($src)) {
-			if( @copy($src, $dst) === false )
+			if ( @copy($src, $dst) === false )
 			{
 				SC_Utils_Ex::sfDispSiteError(FREE_ERROR_MSG, '', false, $dst . "' に書き込めません。パーミッションをご確認ください。");
 				return false;
@@ -277,20 +277,20 @@ class plg_ProductImagesAddKN_Util
 		$dir = $isCashImgDir?$this->GetHtmlDirPath('/cash_images'):$this->GetHtmlDirPath('/tmp_images');
 
 		$timeOut = floatval(ini_get('max_execution_time'));
-		if( $timeOut === 0.0 )
+		if ( $timeOut === 0.0 )
 			$timeOut = 30.0;
 		else
 		{
-			if( $timeOut !== 0.0 )
+			if ( $timeOut !== 0.0 )
 				$timeOut -= 10.0;
-			if( $timeOut <= 0.0 )
+			if ( $timeOut <= 0.0 )
 				$timeOut += 8.0;
 		}
 		$cnt=0;
 		$stCnt=0;
 		$aFileName = array();
 		$isOK = true;
-		if(($handle = opendir($dir)))
+		if (($handle = opendir($dir)))
 		{
 			// 取得する文字数を少なくするために、カレントディレクトリを変更
 			$cDir = getcwd();
@@ -299,15 +299,15 @@ class plg_ProductImagesAddKN_Util
 			$startT = microtime(true);
 			while($file = readdir($handle))
 			{
-				if( "." == $file || ".." == $file )continue;
+				if ( "." == $file || ".." == $file )continue;
 				if (is_file($file)) {
 					$aFileName[] = $file;
 					++$stCnt;
-					if( $storeNum <= $stCnt )
+					if ( $storeNum <= $stCnt )
 					{
 						$stCnt = 0;
 						$isOK = $ins->$func($val, $dir, $aFileName);
-						if( !$isOK ){
+						if ( !$isOK ){
 							chdir($cDir);
 							closedir($handle);
 							GC_Utils_Ex::gfPrintLog("ファイル{$cnt}個読み込み後、強制停止しました。");
@@ -315,9 +315,9 @@ class plg_ProductImagesAddKN_Util
 						}
 						$aFileName = array();
 					}
-					if( (++$cnt%5000) === 0 )
+					if ( (++$cnt%5000) === 0 )
 					{
-						if( (microtime(true) - $startT) > $timeOut )
+						if ( (microtime(true) - $startT) > $timeOut )
 						{
 							chdir($cDir);
 							closedir($handle);
@@ -327,7 +327,7 @@ class plg_ProductImagesAddKN_Util
 					}
 				}
 			}
-			if( $stCnt !== 0 && $isOK )
+			if ( $stCnt !== 0 && $isOK )
 			{
 				$ins->$func($val, $dir, $aFileName);
 			}
@@ -352,9 +352,9 @@ class plg_ProductImagesAddKN_Util
 		$cDir = getcwd();
 		chdir($dir);
 		$aDelFile = glob($pattern, GLOB_NOCHECK|GLOB_NOSORT);
-		if( is_array($aDelFile) )
+		if ( is_array($aDelFile) )
 		{
-			if( count($aDelFile) > 0 )
+			if ( count($aDelFile) > 0 )
 				foreach($aDelFile as &$val)@unlink($val);
 		}
 		chdir($cDir);
@@ -371,23 +371,23 @@ class plg_ProductImagesAddKN_Util
 		
 		// shell_execが使えるなら使う
 		// こっちの方が早いので
-		if( function_exists('shell_exec') )
+		if ( function_exists('shell_exec') )
 		{
 			$isErr = false;
-			if(strtoupper(PHP_OS) === 'LINUX')
+			if (strtoupper(PHP_OS) === 'LINUX')
 			{
 				// ファイルサイズ取得
 				$strTmp = shell_exec('(echo a=0; find '.$dir.' -type f -printf "a+=%s\n"; echo a) | bc');
-				if( !is_null($strTmp) )
+				if ( !is_null($strTmp) )
 					$aRet['size'] = $this->GetFileSizePrefix($this->FixIntegerOverflow(intval($strTmp)));
 				else $isErr=true;
 				// ファイル数取得
 				$strTmp = $strChasSize = shell_exec("find {$dir} -type f | wc -l");
-				if( !is_null($strTmp) && !$isErr )
+				if ( !is_null($strTmp) && !$isErr )
 					$aRet['num'] = intval($strTmp);
 				else $isErr=true;
 			}
-			if( !$isErr )return $aRet;
+			if ( !$isErr )return $aRet;
 		}
 		
 		// 上記がうまく動作しない場合、しかたなくこいつを使う
@@ -398,9 +398,9 @@ class plg_ProductImagesAddKN_Util
 				$aRet['size'] += filesize($dir.'/'.$file);
 				++$aRet['num'];
 			}
-			else if(is_dir($dir.'/'.$file) && $file != '..' && $file != '.')
+			else if (is_dir($dir.'/'.$file) && $file != '..' && $file != '.')
 			{
-				$aTmp += GetDirSize($dir.'/'.$file);
+				$aTmp = GetDirSize($dir.'/'.$file);
 				$aRet['size'] += $aTmp['size'];
 				$aRet['num'] += $aTmp['num'];
 			}
@@ -519,7 +519,7 @@ class plg_ProductImagesAddKN_Util
 	public function GetFileSizePrefix($byteSize)
 	{
 		$byteSize = $this->FixIntegerOverflow($byteSize);
-		if( $byteSize > 0 )
+		if ( $byteSize > 0 )
 		{
 			$tmp = $byteSize;
 			for( $i=0; $tmp >= 1024; $i++ )
@@ -552,14 +552,14 @@ class plg_ProductImagesAddKN_Util
 	 * 
 	 * @param staring $name  一時ロックファイル名
 	 * @param boolean $isEX  trueの場合、排他ロック。falseの場合共有ロック
-	 * @return mixi ロックできた場合はオブジェクトを返す
+	 * @return mixed ロックできた場合はオブジェクトを返す
 	 */
 	public function TmpFileLock($name, $isEX)
 	{
 		$file = new stdClass();
 		$file->path = $this->GetPHtmlPath('/tmp', $name);
 		$file->handle = fopen($file->path, "w+");
-		if(flock($file->handle, $isEX?LOCK_EX:LOCK_SH)){	//排他的ロック
+		if (flock($file->handle, $isEX?LOCK_EX:LOCK_SH)){	//排他的ロック
 			return $file;
 		}
 		 

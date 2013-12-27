@@ -10,7 +10,7 @@
 		resizeTo(screen.availWidth, screen.availHeight);
 		var $x= <!--{$aInfo.scroll_x}-->;
 		var $y= <!--{$aInfo.scroll_y}-->;
-		if($x || $y) {
+		if ($x || $y) {
 			window.scroll($x,$y);
 		}
 		<!--{if $alertMsg != "" }-->

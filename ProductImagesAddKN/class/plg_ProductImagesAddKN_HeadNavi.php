@@ -1,8 +1,8 @@
 <?php
 /*
- * This file is part of EC-CUBE
+ * This is a plug-in "ProductImagesAddKN" of EC CUBE.
  *
- * Copyright(c) 2000-2013 kaoken CO.,LTD. All Rights Reserved.
+ * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
  * http://www.kaoken.net/
  *
@@ -32,7 +32,7 @@ switch($arrPageLayout['device_type_id'])
 	case 10: 
 		break; 
 	default: 
-		if( preg_match('/admin\/products\/product\.php$/',$_SERVER['PHP_SELF']) )
+		if ( preg_match('/admin\/products\/product\.php$/',$_SERVER['PHP_SELF']) )
 		{
 			// 管理画面：商品登録｜編集画面の時
 			$knUtil = plg_ProductImagesAddKN_Util::GetMy();

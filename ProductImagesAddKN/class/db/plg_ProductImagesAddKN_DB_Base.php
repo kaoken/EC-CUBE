@@ -1,8 +1,8 @@
 <?php
 /*
- * This file is part of EC-CUBE
+ * This is a plug-in "ProductImagesAddKN" of EC CUBE.
  *
- * Copyright(c) 2000-2013 kaoken CO.,LTD. All Rights Reserved.
+ * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
  * http://www.kaoken.net/
  *
@@ -28,7 +28,7 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/util/plg_ProductI
 * @package ProductImagesAddKN
 * @author kaoken
 * @since PHP 5.3　
-* @version 0.1
+* @version 1.0
 */
 abstract class plg_ProductImagesAddKN_DB_Base
 {
@@ -70,7 +70,7 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	 */
 	public function __destruct()
 	{
-		if( !is_null($this->m_tmpTblLock) )
+		if ( !is_null($this->m_tmpTblLock) )
 			plg_ProductImagesAddKN_Util::GetMy()->TmpFileUnlock($this->m_tmpTblLock);
 	}
 	
@@ -81,10 +81,10 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	 */
 	public function GetMysqlAutoCommit()
 	{
-		if( DB_TYPE == 'mysql')
+		if ( DB_TYPE == 'mysql')
 		{
 			$ret = $this->DB()->getAll("SELECT @@autocommit as flg");
-			if( count($ret) == 0 ) return false;
+			if ( count($ret) == 0 ) return false;
 			return intval($ret[0]['flg']);
 		}
 		return false;
@@ -98,11 +98,11 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	 */
 	public function SetMysqlAutoCommit($isAutocommit=false)
 	{
-		if( DB_TYPE == 'mysql')
+		if ( DB_TYPE == 'mysql')
 		{
 			$ret = $this->DB()->getAll("SET AUTOCOMMIT = ".($isAutocommit?'1':'0'));
 			
-			if( $ret === false ) return false;
+			if ( $ret === false ) return false;
 						
 			return true;
 		}
@@ -129,7 +129,7 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	 */
 	public function MysqlLockTable($tblName, $isWrite=true)
 	{
-		if( DB_TYPE == 'mysql')
+		if ( DB_TYPE == 'mysql')
 		{
 			// LOCK TABLES を使いたいが、できない環境がそこそこあるため
 			// 代替案として、ファイルロックでごまかす。
@@ -139,14 +139,14 @@ abstract class plg_ProductImagesAddKN_DB_Base
 //			$q = "LOCK TABLES {$tblName} ".($isWrite?'WRITE;':'READ;');
 //			$c = $this->MDB2()->getConnection();
 //			$ret = mysql_query($q,$c);
-//			if( $ret === false )
+//			if ( $ret === false )
 //			{
 //				GC_Utils_Ex::gfPrintLog( "Error: SQL[{$q}]Mysqlのテーブルロックを失敗しました。\nエラー内容：ErrNo[".mysql_errno($c)."] ".mysql_error($c));
 //				return false;
 //			}
 			$knUtil = plg_ProductImagesAddKN_Util::GetMy();
 			$this->m_tmpTblLock = $knUtil->TmpFileLock($tblName.'.tbl',$isWrite);
-			if( is_null($this->m_tmpTblLock) )
+			if ( is_null($this->m_tmpTblLock) )
 			{
 				GC_Utils_Ex::gfPrintLog( "Error: Mysqlのテーブル'{$tblName}'ロックに失敗しました。");
 				return false;	
@@ -176,10 +176,10 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	 */
 	public function PsqlLockTable($tblName, $mode='ACCESS EXCLUSIVE')
 	{
-		if( DB_TYPE == 'mysql')
+		if ( DB_TYPE == 'mysql')
 		{
 			$ret = $this->DB()->getAll("LOCK TABLES {$tblName} IN {$mode}");
-			if( $ret === false ) return false;
+			if ( $ret === false ) return false;
 			return true;
 		}
 		return false;
@@ -196,9 +196,9 @@ abstract class plg_ProductImagesAddKN_DB_Base
 		foreach( $this->m_Vars as $key => $val )
 		{
 			
-			if( $val['required'] === true)
+			if ( $val['required'] === true)
 			{
-				if( array_key_exists($key, $aAdd) )
+				if ( array_key_exists($key, $aAdd) )
 					$aColumn[$key] = $this->ValueCastFromKey($key, $aAdd[$key]);	
 				else
 					$aColumn[$key] = $val['value'];	
@@ -212,14 +212,14 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	 * 
 	 * @param  string $key フィルド名
 	 * @param  int $type 型
-	 * @param  mixi $value デフォルト値
+	 * @param  mixed $value デフォルト値
 	 * @param  int $required 必須か
 	 * @param  int $size バイト数
 	 * @return string
 	 */
 	protected function InitVar($key, $type, $value = null, $required = false, $size = null )
 	{
-		if( $type > 7 || $type < self::TYPE_BOOL )
+		if ( $type > 7 || $type < self::TYPE_BOOL )
 			die("plg_ProductImagesAddKN_DB_Base::InitVar(),存在しないデータタイプを宣言した");
 		$this->m_Vars[$key] = array(
 			'data_type' => $type,
@@ -234,12 +234,12 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	 * キーからキャストした値を返す
 	 * 
 	 * @param  int　$type	  型
-	 * @param  mixi $value	 値
+	 * @param  mixed $value	 値
 	 * @return int|float|string
 	 */
 	public function ValueCastFromKey($key, $value)
 	{
-		if( !isset($value) ) $value = "";
+		if ( !isset($value) ) $value = "";
 		return self::ValueCastFromDataType($this->m_Vars[$key]['data_type'],$value,$this->m_Vars[$key]['maxlength']);	
 	}
 	
@@ -247,7 +247,7 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	 * データの型からキャスとしたデーターを返す
 	 * 
 	 * @param  int　$type	  型
-	 * @param  mixi $value	 値
+	 * @param  mixed $value	 値
 	 * @param  int　$maxlength 長さ
 	 * @return int|float|string
 	 */
@@ -266,7 +266,7 @@ abstract class plg_ProductImagesAddKN_DB_Base
 				$ret = is_null($value) ? null:floatval($value);
 				break;
 			case self::TYPE_STRING:
-				if( !is_null($maxlength) && strlen($value) > $maxlength )
+				if ( !is_null($maxlength) && strlen($value) > $maxlength )
 					$ret = mb_substr($value, 0, $maxlength);
 			case self::TYPE_TEXT:
 			case self::TYPE_TIME:
@@ -286,11 +286,11 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	{
 		foreach( $this->m_Vars as $key => $val )
 		{
-			if( array_key_exists($key, $aCol) )
+			if ( array_key_exists($key, $aCol) )
 			{
 				$aCol[$key] = $this->ValueCastFromKey($key,$aCol[$key]);	
 			}
-			else if( $val['required'] === true )
+			else if ( $val['required'] === true )
 			{
 				$aCol[$key] = $val['value'];	
 			}
@@ -328,7 +328,7 @@ abstract class plg_ProductImagesAddKN_DB_Base
 		$ret = "VALUES(";
 		foreach( $this->m_Vars as $key => $val )
 		{
-			if( array_key_exists($key, $aCol) )
+			if ( array_key_exists($key, $aCol) )
 			{
 				$ret .=  $cnt>0?',':'';
 				$value = $aCol[$key];
@@ -344,7 +344,7 @@ abstract class plg_ProductImagesAddKN_DB_Base
 						$ret .= floatval($value)."";
 						break;
 					case self::TYPE_STRING:
-						if( $val['maxlength'] != null && strlen($value) > $val['maxlength'] )
+						if ( $val['maxlength'] != null && strlen($value) > $val['maxlength'] )
 							$ret .= "'".mb_substr($value, 0, $val['maxlength'])."'";
 						else
 							$ret .= "'{$value}'";
@@ -356,7 +356,7 @@ abstract class plg_ProductImagesAddKN_DB_Base
 						$ret .= "{$value}";
 						break;
 					case self::TYPE_BLOB:
-						if( DB_TYPE == 'pgsql')
+						if ( DB_TYPE == 'pgsql')
 							$ret .= "'{$value}'";
 						else
 							$ret .= "X'{$value}'";
@@ -382,9 +382,9 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	public function GetTableSize()
 	{
 		$ret = array();
-		if( DB_TYPE  == 'pgsql')
+		if ( DB_TYPE  == 'pgsql')
 			$ret = $this->DB()->select("pg_size_pretty(pg_total_relation_size('".$this->m_table."')) as size;");
-			if( count($ret) > 0 )
+			if ( count($ret) > 0 )
 				return $ret[0]['size'];
 		else
 		{
@@ -416,11 +416,11 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	 */
 	public function Begin($isTransaction=true)
 	{
-		if($isTransaction)
+		if ($isTransaction)
 		{
 			$this->m_tmpAuttoCommit = $this->GetMysqlAutoCommit();
 			$this->SetMysqlAutoCommit(false);
-			if( !is_null($this->m_tmpTblLock) )
+			if ( !is_null($this->m_tmpTblLock) )
 				plg_ProductImagesAddKN_Util::GetMy()->TmpFileUnlock($this->m_tmpTblLock);
 			$this->m_objQuery->begin();
 		}
@@ -434,12 +434,12 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	 */
 	public function Commit($isTransaction=true)
 	{
-		if($isTransaction)
+		if ($isTransaction)
 		{
 			$this->m_objQuery->commit();
-			if( $this->m_tmpAuttoCommit != 0 )
+			if ( $this->m_tmpAuttoCommit != 0 )
 				$this->SetMysqlAutoCommit(true);
-			if( !is_null($this->m_tmpTblLock) )
+			if ( !is_null($this->m_tmpTblLock) )
 				plg_ProductImagesAddKN_Util::GetMy()->TmpFileUnlock($this->m_tmpTblLock);
 		}
 	}
@@ -452,12 +452,12 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	 */
 	public function Rollback($isTransaction=true)
 	{
-		if($isTransaction)
+		if ($isTransaction)
 		{
 			$this->m_objQuery->rollback();
-			if( $this->m_tmpAuttoCommit != 0 )
+			if ( $this->m_tmpAuttoCommit != 0 )
 				$this->SetMysqlAutoCommit(true);
-			if( !is_null($this->m_tmpTblLock) )
+			if ( !is_null($this->m_tmpTblLock) )
 				plg_ProductImagesAddKN_Util::GetMy()->TmpFileUnlock($this->m_tmpTblLock);
 		}
 	}
@@ -498,11 +498,11 @@ abstract class plg_ProductImagesAddKN_DB_Base
 		$ret = '';
 		foreach($ary as $val )
 		{
-			if( $cnt > 0 ) $ret .= 'OR ';
+			if ( $cnt > 0 ) $ret .= 'OR ';
 			$ret .= $item.'=';
-			if( is_numeric($val) )
+			if ( is_numeric($val) )
 				$ret .= $val.' ';
-			else if( is_string($val) )
+			else if ( is_string($val) )
 				$ret .= "'{$val}' ";
 			++$cnt;
 		}
@@ -521,11 +521,11 @@ abstract class plg_ProductImagesAddKN_DB_Base
 		$ret = '';
 		foreach($ary as $val )
 		{
-			if( $cnt > 0 ) $ret .= 'AND ';
+			if ( $cnt > 0 ) $ret .= 'AND ';
 			$ret .= $item.'=';
-			if( is_numeric($val) )
+			if ( is_numeric($val) )
 				$ret .= $val.' ';
-			else if( is_string($val) )
+			else if ( is_string($val) )
 				$ret .= "'{$val}' ";
 			++$cnt;
 		}
@@ -544,11 +544,11 @@ abstract class plg_ProductImagesAddKN_DB_Base
 		$ret = 'IN (';
 		foreach($ary as $val )
 		{
-			if( $cnt > 0 ) $ret .= ',';
+			if ( $cnt > 0 ) $ret .= ',';
 			
-			if( is_numeric($val) )
+			if ( is_numeric($val) )
 				$ret .= $val.' ';
-			else if( is_string($val) )
+			else if ( is_string($val) )
 				$ret .= "'{$val}' ";
 			++$cnt;
 		}
@@ -557,7 +557,7 @@ abstract class plg_ProductImagesAddKN_DB_Base
 /*	
 	public function MyLock()
 	{
-		if( DB_TYPE == 'pgsql')
+		if ( DB_TYPE == 'pgsql')
 		{
 			$this->DB()->query('LOCK '.$this->m_table.' IN SHARE UPDATE EXCLUSIVE MODE');
 		}
@@ -577,7 +577,7 @@ abstract class plg_ProductImagesAddKN_DB_Base
 	protected function DropTable($table)
 	{
 		$this->DB()->exec("DROP TABLE {$table};");
-		if( $this->DB()->isError() )
+		if ( $this->DB()->isError() )
 		{
 			SC_Utils_Ex::sfDispSiteError(FREE_ERROR_MSG, '', false,"テーブル'".$table . "' 削除に失敗しました。");
 			return false;

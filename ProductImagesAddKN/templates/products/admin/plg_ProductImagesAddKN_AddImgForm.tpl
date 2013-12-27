@@ -106,10 +106,10 @@
 		data: 'mode=list&'+g_para,
 		success: function(data) 
 		{
-			if(data == null)return;
-			else if( data.error )
+			if (data == null)return;
+			else if ( data.error )
 				alert('商品画像一覧表示に関するエラー : ' + data.error);
-			else if( data.list )
+			else if ( data.list )
 			{
 				for (var i =0; i<data.num; i++) 
 					$.tmpl( $( g_tmplImgList ), {file:data.list[i]}).appendTo( "#kn_product_img_list" );
@@ -124,7 +124,7 @@
 	// 選択された商品画像を削除する
 	var g_isDeleting = false;
 	$('#kn_selected_del').click(function(e) {
-		if( g_isDeleting )
+		if ( g_isDeleting )
 		{
 			alert('商品画像を削除中です。');
 			return;	
@@ -141,7 +141,7 @@
 		});
 
 		
-		if( checkCnt == 0 )
+		if ( checkCnt == 0 )
 		{
 			alert('チェックが一つもありません。');
 			return;
@@ -158,16 +158,16 @@
 			},
 			success: function( data )
 			{
-				if(data == null)return;
-				else if( data.error )
+				if (data == null)return;
+				else if ( data.error )
 					alert('商品画像削除に関するエラー : ' + data.error);
-				else if( data.del_img )
+				else if ( data.del_img )
 				{
 					for( var i = 0; i<checks.length; ++i )
 					{
 						$('#kn_product_img_frame'+checks[i]).remove();
 					}
-					if( data.list )
+					if ( data.list )
 					{
 						for (var i =0; i<data.list.length; i++)
 						{
@@ -219,9 +219,9 @@
 		multi     : true,
 		onUploadSuccess : function(file, data, response) {
 			file = $.parseJSON(data);
-			if( file.errorNo != 0 )
+			if ( file.errorNo != 0 )
 			{
-				if(g_uploadCancel)return;
+				if (g_uploadCancel)return;
 				g_uploadCancel = true;
 				$('#img_upload_kn').uploadify('cancel', '*');
 				alert(file.error);
@@ -246,15 +246,15 @@ function ChangePriority(img_id)
 	var priorityN = parseInt($(priorityNID).val()); 
 	var movePara = '&img_id='+img_id+'&priority='+priority;
 	var isErr = false;
-	if( isNaN(priority) )isErr=true;
-	else if( priority < 0 )isErr=true;
+	if ( isNaN(priority) )isErr=true;
+	else if ( priority < 0 )isErr=true;
 	
-	if( isErr ){
+	if ( isErr ){
 		$(priorityID).val(priorityN);
 		alert('商品画像[ID:'+img_id+']の移動番号が不正です。');
 		return;	
 	}
-	else if( priority == priorityN )
+	else if ( priority == priorityN )
 		return;
 	
 	$.ajax({
@@ -268,8 +268,8 @@ function ChangePriority(img_id)
 		},
 		success: function( data )
 		{
-			if(data == null)return;
-			else if( data.error )
+			if (data == null)return;
+			else if ( data.error )
 				alert('商品画像の順番を変更に関するエラー : ' + data.error);
 				
 			for (var i =0; i<data.num; i++)
@@ -279,7 +279,7 @@ function ChangePriority(img_id)
 			}
 			var frameID = '#kn_product_img_frame'+data.target.id;
 			$(frameID).remove();
-			if( data.target.priority == (parseInt(data.num)-1) )
+			if ( data.target.priority == (parseInt(data.num)-1) )
 			{
 				$.tmpl( $( g_tmplImgList ), {file:data.target} ).appendTo( "#kn_product_img_list" );
 			}

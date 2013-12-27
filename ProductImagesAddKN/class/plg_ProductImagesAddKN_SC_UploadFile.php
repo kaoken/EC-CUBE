@@ -28,7 +28,7 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/plg_ProductImages
 * @package ProductImagesAddKN
 * @author kaoken
 * @since PHP 5.3　
-* @version 0.1
+* @version 1.0
 */
 class plg_ProductImagesAddKN_SC_UploadFile extends SC_UploadFile
 {
@@ -49,7 +49,7 @@ class plg_ProductImagesAddKN_SC_UploadFile extends SC_UploadFile
 			
 			
 			$imgInfo = @getimagesize($src_file);
-			if( $imgInf === false )
+			if ( $imgInfo === false )
 				throw new RuntimeException('画像ファイルではありません。');
 
 			switch ($imgInfo[2]) {
@@ -63,7 +63,7 @@ class plg_ProductImagesAddKN_SC_UploadFile extends SC_UploadFile
 					throw new RuntimeException('対応している画像は(GIF, JPEG, PNG)のみです。MIME:['.$imgInfo['mime'].']は、対象外です。');
 			}
 			// サイズが同じ場合、そのままファイルを出力
-			if( ($width === $imgInfo[0] &&$height === $imgInfo[1]) ||
+			if ( ($width === $imgInfo[0] && $height === $imgInfo[1]) ||
 				( $width === 0 && $height === 0 ))
 			{
 				copy($src_file, $dst_file);
