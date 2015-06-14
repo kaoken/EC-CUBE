@@ -4,7 +4,7 @@
  *
  * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
- * http://www.kaoken.net/
+ * http://www.kaoken.cg0.org/
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,117 +24,115 @@
 require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/db/plg_ProductImagesAddKN_DB_Base.php';
 
 /**
-* ProductImagesAddKNプラグイン キャッシュイメージの許容サイズ関連のDBクラス
-*
-* @package ProductImagesAddKN
-* @author kaoken
-* @since PHP 5.3　
-* @version 1.0
-*/
+ * ProductImagesAddKNプラグイン キャッシュイメージの許容サイズ関連のDBクラス
+ *
+ * @package ProductImagesAddKN
+ * @author kaoken
+ * @since PHP 5.3　
+ * @version 1.0
+ */
 class plg_ProductImagesAddKN_DB_AllowableSize extends plg_ProductImagesAddKN_DB_Base
 {
 	/**
 	 * コンストラクタ
-	 *
-	 * @return void
 	 */
 	public function __construct()
 	{
 		parent::__construct();
-		$this->m_table = self::TABLE_ALLOWABLE_SIZE;			
+		$this->m_table = self::TABLE_ALLOWABLE_SIZE;
 	}
-	
-		
+
+
 	/**
 	 * 許容サイズか？
-	 * 
+	 *
 	 * @param int $width 幅
 	 * @param int $height 高さ
 	 * @return 許容サイズならtrueを返す
 	 */
-	public function Check($width, $height)
+	public function check($width, $height)
 	{
 		$col = "*";
 		$where = "width = ".$width." AND height = ".$height;
-		$arrColumns = $this->DB()->select($col, $this->m_table, $where);
+		$arrColumns = $this->db()->select($col, $this->m_table, $where);
 		if ( count($arrColumns) > 0 )
 			return true;
 		return false;
 	}
-	
+
 	/**
 	 * 許容サイズリストを取得する
-	 * 
+	 *
 	 * @param array $aAddSize 追加サイズ
 	 * @param array $aErrAddSize error情報
 	 * @return boolean
 	 */
-	public function GetList()
+	public function getList()
 	{
-		$where = "width != 0 ORDER BY width ASC"; 
-		$ret = $this->DB()->select("*", $this->m_table, $where);
-  		if ( count($ret) > 0 )
+		$where = "width != 0 ORDER BY width ASC";
+		$ret = $this->db()->select("*", $this->m_table, $where);
+		if ( count($ret) > 0 )
 			return $ret;
-		return array();					 
+		return array();
 	}
-	
+
 	/**
 	 * 許容サイズを削除する
-	 * 
+	 *
 	 * @param array $aAddSize 追加サイズ
 	 * @param array $aErrAddSize error情報
 	 * @return boolean
 	 */
-	public function Delete($aAddSize, &$aErrAddSize)
+	public function delete($aAddSize, &$aErrAddSize)
 	{
-		$this->Begin();
+		$this->begin();
 		$where = "width=".$aAddSize['width']." AND height=".$aAddSize['height']." AND not_del = 0";
-		$ret = $this->DB()->delete($this->m_table, $where );
+		$ret = $this->db()->delete($this->m_table, $where );
 
-		if ( !is_numeric($ret) || $ret == 0 || $this->IsError())
+		if ( !is_numeric($ret) || $ret == 0 || $this->isError())
 		{
 			$aErrAddSize["insert_failure"]="幅：".$aAddSize['width']." 高さ：".$aAddSize['height']."px は削除できませんでした。";
-			$this->Rollback();
+			$this->rollback();
 			return false;
-		} 
+		}
 		else
 		{
-			$this->Commit();
-		}   
-		return true;					 
+			$this->commit();
+		}
+		return true;
 	}
 
 	/**
 	 * 許容サイズを挿入する
-	 * 
+	 *
 	 * @param array $aAddSize 追加サイズ
 	 * @param array $aErrAddSize error情報
 	 * @return boolean
 	 */
-	public function Insert($aAddSize, &$aErrAddSize)
+	public function insert($aAddSize, &$aErrAddSize)
 	{
-		if ( $this->DB()->select("*", $this->m_table, "width=".$aAddSize['width']." AND height=".$aAddSize['height']) == null)
+		if ( $this->db()->select("*", $this->m_table, "width=".$aAddSize['width']." AND height=".$aAddSize['height']) == null)
 		{
-			$this->Begin();
-			if ( $this->DB()->insert($this->m_table, $aAddSize) == false || $this->IsError())
+			$this->begin();
+			if ( $this->db()->insert($this->m_table, $aAddSize) == false || $this->isError())
 			{
 				$aErrAddSize["insert_failure"]="幅：".$aAddSize['width']."px 高さ：".$aAddSize['height']."px は、追加に失敗しました。";
-				$this->Rollback();
+				$this->rollback();
 				return false;
 			}
 			else
 			{
-				$this->Commit();
+				$this->commit();
 			}
-		} 
+		}
 		else
 		{
-			$aErrAddSize["insert_failure"]="幅：".$aAddSize['width']."px 高さ：".$aAddSize['height']."px はすでに登録されています。";	
-			return false;															 
-		} 
-		return true;					 
-	}	
-	
+			$aErrAddSize["insert_failure"]="幅：".$aAddSize['width']."px 高さ：".$aAddSize['height']."px はすでに登録されています。";
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * インストール
 	 * Installはプラグインのインストール時に実行されるようにしてください。
@@ -144,7 +142,7 @@ class plg_ProductImagesAddKN_DB_AllowableSize extends plg_ProductImagesAddKN_DB_
 	 * @param  array $arrTableList 存在するテーブル名の配列
 	 * @return void
 	 */
-	public function Install($arrPlugin, $arrTableList)
+	public function install($arrPlugin, $arrTableList)
 	{
 		try {
 			// リサイズ画像の許可するサイズ
@@ -169,22 +167,22 @@ class plg_ProductImagesAddKN_DB_AllowableSize extends plg_ProductImagesAddKN_DB_
 					$sqlval .= ");";
 				}
 				// テーブル作成
-				if ( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table);
+				if ( !$this->db()->exec($sqlval) )throw new Exception($this->m_table);
 				if ( DB_TYPE  == 'pgsql')
 				{
 					$sqlval = "CREATE UNIQUE INDEX uc_".$this->m_table."_id ON ".$this->m_table." USING btree (width,height);";
-					if ( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table.":CREATE UNIQUE INDEX]");
+					if ( !$this->db()->exec($sqlval) )throw new Exception($this->m_table.":CREATE UNIQUE INDEX]");
 				}
 				// 初期コンフィグデータ 挿入
 				$aVal["not_del"] = 1;	// 基本サイズは削除できないようにする			
 				$aVal["width"] = LARGE_IMAGE_WIDTH; $aVal["height"] =LARGE_IMAGE_HEIGHT;
-				$this->DB()->insert($this->m_table, $aVal);
+				$this->db()->insert($this->m_table, $aVal);
 				$aVal["width"] = SMALL_IMAGE_WIDTH; $aVal["height"] =SMALL_IMAGE_HEIGHT;
-				$this->DB()->insert($this->m_table, $aVal);
+				$this->db()->insert($this->m_table, $aVal);
 				$aVal["width"] = NORMAL_IMAGE_WIDTH; $aVal["height"] =NORMAL_IMAGE_HEIGHT;
-				$this->DB()->insert($this->m_table, $aVal);
+				$this->db()->insert($this->m_table, $aVal);
 				$aVal["width"] = NORMAL_SUBIMAGE_WIDTH; $aVal["height"] =NORMAL_SUBIMAGE_HEIGHT;
-				$this->DB()->insert($this->m_table, $aVal);
+				$this->db()->insert($this->m_table, $aVal);
 			}
 		}
 		catch (Exception $e)
@@ -196,4 +194,3 @@ class plg_ProductImagesAddKN_DB_AllowableSize extends plg_ProductImagesAddKN_DB_
 	}
 
 }
-?>

@@ -4,7 +4,7 @@
  *
  * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
- * http://www.kaoken.net/
+ * http://www.kaoken.cg0.org/
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,46 +24,40 @@
 require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/db/plg_ProductImagesAddKN_DB_Base.php';
 
 /**
-* ProductImagesAddKNプラグイン キャッシュイメージ関連のDBクラス
-*
-* @package ProductImagesAddKN
-* @author kaoken
-* @since PHP 5.3　
-* @version 1.0
-*/
+ * ProductImagesAddKNプラグイン キャッシュイメージ関連のDBクラス
+ *
+ * @package ProductImagesAddKN
+ * @author kaoken
+ * @since PHP 5.3　
+ * @version 1.0
+ */
 class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 {
 	/**
 	 * コンストラクタ
-	 *
-	 * @return void
 	 */
 	public function __construct()
 	{
 		parent::__construct();
 		$this->m_table = self::TABLE_CASH;
-		
-		$this->InitVar('file_name', self::TYPE_STRING, '', true, 128);
-		$this->InitVar('img_file', self::TYPE_STRING, '', true, 64);
-		$this->InitVar('img_id', self::TYPE_INT, 0, true);
-		$this->InitVar('product_id', self::TYPE_INT, 0, true);
-		$this->InitVar('width', self::TYPE_INT, 0, true);
-		$this->InitVar('height', self::TYPE_INT, 0, true);
-		$this->InitVar('effect', self::TYPE_STRING, '', true, 32);
-		$this->InitVar('ext', self::TYPE_STRING, '', true, 4);
-		$this->InitVar('create_tm', self::TYPE_TIME, 'CURRENT_TIMESTAMP', false);
-   }
+
+		$this->initVar('file_name', self::TYPE_STRING, '', true, 128);
+		$this->initVar('img_file', self::TYPE_STRING, '', true, 64);
+		$this->initVar('img_id', self::TYPE_INT, 0, true);
+		$this->initVar('product_id', self::TYPE_INT, 0, true);
+		$this->initVar('width', self::TYPE_INT, 0, true);
+		$this->initVar('height', self::TYPE_INT, 0, true);
+		$this->initVar('effect', self::TYPE_STRING, '', true, 32);
+		$this->initVar('ext', self::TYPE_STRING, '', true, 4);
+		$this->initVar('create_tm', self::TYPE_TIME, 'CURRENT_TIMESTAMP', false);
+	}
 	/**
 	 * カラムからキャッシュ用ファイル名を作る
 	 *
-	 * @param int $srcFile 画像ファイル名
-	 * @param int $img_id  商品画像ID
-	 * @param int $width   幅
-	 * @param int $height  高さ
-	 * @param int $eff	 エフェクト名（予約名）
+	 * @param array $aInfo 画像ファイル情報
 	 * @return array
 	 */
-	public function CreateCashFileName($aInfo)
+	public function createCashFileName($aInfo)
 	{
 		$name = $aInfo['img_file'].'$';
 		$name .= $aInfo['img_id'].'$';
@@ -81,14 +75,14 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 	 *  画像ファイル名はファイル名のみにする。
 	 * @return array
 	 */
-	public function Get(&$aInfo)
-	{	
+	public function get(&$aInfo)
+	{
 		if ( $aInfo['src_file'] != '' )
 			$aInfo['img_file'] = basename($aInfo['src_file']);
 
-		$where = "file_name = '".$this->CreateCashFileName($aInfo)."'";
-		
-		$arrColumns = $this->DB()->select("*", $this->m_table, $where);
+		$where = "file_name = '".$this->createCashFileName($aInfo)."'";
+
+		$arrColumns = $this->db()->select("*", $this->m_table, $where);
 		if ( count($arrColumns) == 1 )
 		{
 			return $arrColumns[0];
@@ -98,87 +92,87 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 
 	/**
 	 * 縮小した画像情報を挿入する
-	 * 
+	 *
 	 * @param array $aInsert 必須Column配列
 	 * @return boolean 成功した場合はtrueを返す
 	 */
-	public function Insert(&$aInsert)
+	public function insert(&$aInsert)
 	{
-		$aInsert['file_name'] = $this->CreateCashFileName($aInsert);
+		$aInsert['file_name'] = $this->createCashFileName($aInsert);
 		$aInsert['create_tm'] = 'CURRENT_TIMESTAMP';
-		$this->DataTypeCastFromColumn($aInsert);
-		  
-		$q  = "INSERT INTO ".$this->m_table."(";
-		$q .= $this->GetKeyNameConnectString($aInsert).") ";
-		$q .= $this->GetValuesString($aInsert).";";
+		$this->dataTypeCastFromColumn($aInsert);
 
-		$this->Begin();
-		$ret = $this->Query($q, array(), false, null, MDB2_PREPARE_MANIP);
-		if ( $ret === false || $this->IsError())
+		$q  = "INSERT INTO ".$this->m_table."(";
+		$q .= $this->getKeyNameConnectString($aInsert).") ";
+		$q .= $this->getValuesString($aInsert).";";
+
+		$this->begin();
+		$ret = $this->query($q, array(), false, null, MDB2_PREPARE_MANIP);
+		if ( $ret === false || $this->isError())
 		{
-			$this->Rollback();
-			return false;	
+			$this->rollback();
+			return false;
 		}
-		$this->Commit();
+		$this->commit();
 		return true;
 	}
-	
+
 	/**
 	 * 商品IDを変更する
-	 * 
+	 *
 	 * @param int	 $currentID 現在の商品ID
 	 * @param int	 $newID	 新しい商品ID
 	 * @param boolean $isTransaction トランザクション処理をするか？
 	 * @return mixed
 	 */
-	public function ChangeProductID($currentID, $newID, $isTransaction=false)
+	public function changeProductID($currentID, $newID, $isTransaction=false)
 	{
 		$currentID = intval($currentID);
 		$newID = intval($newID);
-		
+
 		// 置き換えるのが面倒なので！
 		// キャッシュディレクトリから削除,
-		$knUtil = plg_ProductImagesAddKN_Util::GetMy();
-		$knUtil->GlobDeleteCashImages('*$*$'.$currentID.'$*',false);
-		
-		$this->Begin($isTransaction);
-		
+		$knUtil = plg_ProductImagesAddKN_Util::getMy();
+		$knUtil->globDeleteCashImages('*$*$'.$currentID.'$*',false);
+
+		$this->begin($isTransaction);
+
 		$q  = 'UPDATE '.$this->m_table." SET product_id = {$newID} ";
 		$q .= "WHERE product_id = {$currentID}";
-				  
-				  
-		$ret = $this->Query($q, array(), false, null, MDB2_PREPARE_MANIP);
-		$this->Commit($isTransaction);
-		
 
-		
+
+		$ret = $this->query($q, array(), false, null, MDB2_PREPARE_MANIP);
+		$this->commit($isTransaction);
+
+
+
 		return $ret;
 	}
-			
+
 	/**
 	 * キャッシュ画像ファイル数を取得
-	 * 
+	 *
 	 * @return int
 	 */
-	public function GetNum()
+	public function getNum()
 	{
-		$ret = $this->DB()->select("count(*) as cnt", $this->m_table);
+		$ret = $this->db()->select("count(*) as cnt", $this->m_table);
 		if ( count($ret) > 0 )
 			return $ret[0]['cnt'];
-		
+
 		return 0;
 	}
-	
+
 	/**
 	 * キャッシュ商品画像を商品IDと順番の番号から取得
-	 * 
+	 *
 	 * @param int $aCol 商品画像ID,幅,高さ,エフェクト情報がある配列
 	 * @return array
 	 */
-	public function GetFromPrductImgId_W_H_E($aCol)
+	public function getFromPrductImgId_W_H_E($aCol)
 	{
 		$where = 'img_id = '.$aCol['img_id'].' AND width = '.$aCol['width'].' AND height = '.$aCol['height']." AND effect = '".$aCol['effect']."'";
-		$arrColumns = $this->DB()->select("*", $this->m_table, $where);
+		$arrColumns = $this->db()->select("*", $this->m_table, $where);
 
 		if ( count($arrColumns) > 0 )
 		{
@@ -186,106 +180,106 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 		}
 		return array();
 	}
-	
+
 	/**
 	 * 商品画像を商品IDと順番の番号かつ、幅高さ、エフェクト値で取得する
-	 * 
+	 *
 	 * @param array	$aCol  商品画像ID,順番,幅,高さ,エフェクト情報がある配列
 	 * @return array
 	 */
-	public function GetFromPrdouctIDAndPriority($aCol)
+	public function getFromProductIDAndPriority($aCol)
 	{
-        $aCol['product_id'] = intval($aCol['product_id']);
-        $aCol['priority'] = intval($aCol['priority']);
-		
+		$aCol['product_id'] = intval($aCol['product_id']);
+		$aCol['priority'] = intval($aCol['priority']);
+
 		$where  = 'width = '.$aCol['width'].' AND height = '.$aCol['height']." AND effect = '".$aCol['effect']."'";
 		$where .= " AND img_id = (";
 		$where .= 'SELECT img_id FROM '.self::TABLE_IMG.' WHERE ';
 		$where .= "product_id = ".$aCol['product_id']." AND priority = ".$aCol['priority'].")";
-		$arrColumns = $this->DB()->select('*', $this->m_table, $where);
+		$arrColumns = $this->db()->select('*', $this->m_table, $where);
 		if ( count($arrColumns) == 0 )
 		{
 			return array();
 		}
-		
-		$this->DataTypeCastFromColumn($arrColumns[0]);
-			
+
+		$this->dataTypeCastFromColumn($arrColumns[0]);
+
 		return $arrColumns[0];
 	}
-	
+
 	/**
 	 * 複数の商品画像IDが入ったものを削除する
-	 * 
+	 *
 	 * @param array   $aImgID		 商品画像IDが入った配列
-	 * @param boolean $isCashImgDir   検索対象はがcash_imageディレクトリの場合true、そうでない場合はtmp_imageディレクトリ
+	 * @param boolean $isCashImgDir   検索対象はがcash_imageディレクトリの場合true、そうでない場合はtemp_imageディレクトリ
 	 * @param boolean $isTransaction トランザクション処理をするか？
 	 * @return array
 	 */
-	public function DeleteFromImageIDs($aImgID, $isCashImgDir=true, $isTransaction=false)
+	public function deleteFromImageIDs($aImgID, $isCashImgDir=true, $isTransaction=false)
 	{
-		$this->Begin($isTransaction);
-		
+		$this->begin($isTransaction);
+
 		// キャッシュディレクトリから削除
-		$knUtil = plg_ProductImagesAddKN_Util::GetMy();
+		$knUtil = plg_ProductImagesAddKN_Util::getMy();
 		foreach($aImgID as &$id )
 		{
-			$knUtil->GlobDeleteCashImages("*\${$id}\$*",$isCashImgDir);
+			$knUtil->globDeleteCashImages("*\${$id}\$*",$isCashImgDir);
 		}
-		$where = 'img_id '.$this->CreateString_xINx_FromAry($aImgID);
-		$ret = $this->DB()->delete($this->m_table, $where);
-		$this->Commit($isTransaction);
-		
+		$where = 'img_id '.$this->createString_xINx_FromAry($aImgID);
+		$ret = $this->db()->delete($this->m_table, $where);
+		$this->commit($isTransaction);
+
 		return $ret;
 	}
-	
+
 	/**
 	 * 商品画像ファイル名と一致するものは削除する
-	 * 
+	 *
 	 * @param string  $fileName	   画像ファイル名
 	 * @param boolean $isTransaction トランザクション処理をするか？
 	 * @return array
 	 */
-	public function DeleteFromImageName($fileName, $isTransaction=false)
+	public function deleteFromImageName($fileName, $isTransaction=false)
 	{
 		if ( $fileName == '' )
 		{
-			return false;	
+			return false;
 		}
-		$this->Begin($isTransaction);
-		
+		$this->begin($isTransaction);
+
 		// キャッシュディレクトリから削除
-		$knUtil = plg_ProductImagesAddKN_Util::GetMy();
-		$knUtil->GlobDeleteCashImages("{$fileName}\$*");
-		
+		$knUtil = plg_ProductImagesAddKN_Util::getMy();
+		$knUtil->globDeleteCashImages("{$fileName}\$*");
+
 		// 
 		$where = "img_file = '{$fileName}' ";
-		$ret = $this->DB()->delete($this->m_table, $where);
-		$this->Commit($isTransaction);
-		
+		$ret = $this->db()->delete($this->m_table, $where);
+		$this->commit($isTransaction);
+
 		return $ret;
 	}
-	
-	
+
+
 	/**
 	 * DeleteOldImgsメンバ関数内からのみ呼び出される。
 	 * plg_ProductImagesAddKN_Util::ReadCashImgFileNames経由して
 	 * $aVal['s']日以上アクセスされていないファイルを削除
-	 * 
+	 *
 	 * @param int    $day         任意の値
-     * @param boolean $isTransaction トランザクション処理をするか？
-     * @return int 削除された数を返す。失敗、エラー時には-1が返る
+	 * @param boolean $isTransaction トランザクション処理をするか？
+	 * @return int 削除された数を返す。失敗、エラー時には-1が返る
 	 */
-	public function DeleteOldImgs($day,$isTransaction=false)
+	public function deleteOldImgs($day,$isTransaction=false)
 	{
 		$day = intval($day);
 		// 先にファイル削除の方が良いので！
 		// $aVal['day']日以上アクセスされていないファイルを削除
-		$knUtil = plg_ProductImagesAddKN_Util::GetMy();
+		$knUtil = plg_ProductImagesAddKN_Util::getMy();
 		$aVal['s'] = 86400*$day;
-        $aVal['cnt'] = 0;
-        $aVal['isTransaction'] = $isTransaction;
-		$isErr = !$knUtil->ReadCashImgFileNames($aVal,$this,'DeleteOldImgs_Call',100);
-		
+		$aVal['cnt'] = 0;
+		$aVal['isTransaction'] = $isTransaction;
+		$isErr = !$knUtil->readCashImgFileNames($aVal,$this,'deleteOldImgs_call',100);
+
 		// 何らかのトラブルで残ってしまった、レコードもついでに削除
 		if ( $day !== 0 && $isErr)
 		{
@@ -300,31 +294,32 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 			{
 				$where = "timestampdiff(DAY,create_tm,now()) <= {$day}";
 			}
-	
-			$this->Begin($isTransaction);
-			
-			$ret = $this->DB()->delete($this->m_table, $where);	 
+
+			$this->begin($isTransaction);
+
+			$ret = $this->db()->delete($this->m_table, $where);
 			if ( $ret === false )
 			{
-				$this->Rollback($isTransaction);
-				return -1;	
+				$this->rollback($isTransaction);
+				return -1;
 			}
-			$this->Commit($isTransaction);
+			$this->commit($isTransaction);
 		}
 		return $aVal['cnt'];
 	}
+
 	/**
 	 * DeleteOldImgsメンバ関数内からのみ呼び出される。
 	 * chdirで既に開始場所が$dirになっている
 	 * plg_ProductImagesAddKN_Util::ReadCashImgFileNames経由して
 	 * $aVal['s']日以上アクセスされていないファイルを削除
-	 * 
+	 *
 	 * @param mix    $val         任意の値
 	 * @param string $dir         ディレクトリパス
 	 * @param array  $aFileName   ファイル名の配列
 	 * @return boolean falseを返すと、処理が強制停止されます。
 	 */
-	public function DeleteOldImgs_Call(&$val,$dir,&$aFileName)
+	public function deleteOldImgs_call(&$val,$dir,&$aFileName)
 	{
 		$delList = '';
 		if ( $val['s'] === 0 )
@@ -351,39 +346,39 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 		if ( $delList !== '' )
 		{
 			$delList = rtrim( $delList, ',');
-			$this->Begin($val['isTransaction']);
+			$this->begin($val['isTransaction']);
 			//
 			$where = "";
 			if ( $val['s'] !== 0 )
 				$where = "file_name IN ({$delList}) ";
-			$ret = $this->DB()->delete($this->m_table, $where);
+			$ret = $this->db()->delete($this->m_table, $where);
 			if ( $ret === false )
 			{
-				$this->Rollback($val['isTransaction']);
+				$this->rollback($val['isTransaction']);
 				$val['cnt'] = -1;
-				return false;	
+				return false;
 			}
-			$this->Commit($val['isTransaction']);
+			$this->commit($val['isTransaction']);
 		}
 		return true;
 	}
 
-	
+
 	/**
 	 * 一時的に作られた画像が指定時間を過ぎていたら削除する
-	 * 
+	 *
 	 * @param array   $elapsedHour   経過時間
 	 * @param boolean $isTransaction トランザクション処理をするか？
 	 * @return array
 	 */
-	public function DeleteNegativeProductID($elapsedHour, $isTransaction=false)
+	public function deleteNegativeProductID($elapsedHour, $isTransaction=false)
 	{
 		// 先にファイル削除の方が良いので！
 		// 商品IDがマナス値かつ$aVal['hour']時間以上経過したファイルを削除
-		$knUtil = plg_ProductImagesAddKN_Util::GetMy();
+		$knUtil = plg_ProductImagesAddKN_Util::getMy();
 		$aVal['hour'] = $elapsedHour;
-		$knUtil->ReadCashImgFileNames($aVal,$this,'DeleteNegativeProductID_Call',1000,false);
-		
+		$knUtil->readCashImgFileNames($aVal,$this,'deleteNegativeProductID_call',1000,false);
+
 		$where = "";
 		if ( DB_TYPE  == 'pgsql')
 		{
@@ -396,28 +391,28 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 			$where = "timestampdiff(HOUR,create_tm,now()) <= {$elapsedHour} AND product_id < 0";
 		}
 
-		$this->Begin($isTransaction);
-		
-		$ret = $this->DB()->delete($this->m_table, $where);	 
+		$this->begin($isTransaction);
+
+		$ret = $this->db()->delete($this->m_table, $where);
 		if ( $ret === false )
 		{
-			$this->Rollback($isTransaction);
-			return false;	
+			$this->rollback($isTransaction);
+			return false;
 		}
-		$this->Commit($isTransaction);
+		$this->commit($isTransaction);
 		return $ret;
 	}
 	/**
 	 * DeleteNegativeProductIDメンバ関数内からのみ呼び出される。
 	 * plg_ProductImagesAddKN_Util::ReadCashImgFileNames経由して
 	 * 商品IDがマナス値かつ$val['hour']時間以上経過したファイルを削除
-	 * 
+	 *
 	 * @param mix    $val         任意の値
 	 * @param string $dir         ディレクトリパス
 	 * @param array  $aFileName   ファイル名の配列
 	 * @return boolean falseを返すと、処理が強制停止されます。
 	 */
-	public function DeleteNegativeProductID_Call(&$val,$dir,&$aFileName)
+	public function deleteNegativeProductID_call(&$val,$dir,&$aFileName)
 	{
 		foreach($aFileName as &$name)
 		{
@@ -426,101 +421,101 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 		}
 		return true;
 	}
-	
+
 	/**
 	 * 商品IDから削除する
-	 * 
+	 *
 	 * @param array   $product_id	 商品ID
 	 * @param boolean $isTransaction トランザクション処理をするか？
 	 * @return array
 	 */
-	public function DeleteFromProductID($product_id, $isTransaction=false)
+	public function deleteFromProductID($product_id, $isTransaction=false)
 	{
 		$product_id = intval($product_id);
-		$this->Begin($isTransaction);
+		$this->begin($isTransaction);
 		// キャッシュディレクトリから削除
-		$knUtil = plg_ProductImagesAddKN_Util::GetMy();
-		$knUtil->GlobDeleteCashImages('*$*$'.$product_id.'$*');
+		$knUtil = plg_ProductImagesAddKN_Util::getMy();
+		$knUtil->globDeleteCashImages('*$*$'.$product_id.'$*');
 		//
 		$where = "product_id = {$product_id}";
-		$ret = $this->DB()->delete($this->m_table, $where);
-		$this->Commit($isTransaction);
-		
+		$ret = $this->db()->delete($this->m_table, $where);
+		$this->commit($isTransaction);
+
 		return $ret;
 	}
 	/**
 	 * [商品ID]リンクを失ったレコードを削除します
-	 * 
+	 *
 	 * @param boolean $isTransaction トランザクション処理をするか？
 	 * @return int
 	 */
-	public function DeleteLostProductIdLink($isTransaction=false)
+	public function deleteLostProductIdLink($isTransaction=false)
 	{
-		$this->Begin($isTransaction);
-		
+		$this->begin($isTransaction);
+
 		// 削除対象の商品IDを取得
 		$selectQ  = "SELECT p.product_id FROM ".$this->m_table." as p ";
 		$selectQ .= "LEFT JOIN dtb_products as d ON p.product_id = d.product_id ";
 		$selectQ .= "WHERE p.product_id > 0 AND (d.del_flg = 1 OR d.product_id IS NULL) ";
 		$selectQ .= "GROUP BY p.product_id";
-		$ret = $this->DB()->getAll($selectQ);
+		$ret = $this->db()->getAll($selectQ);
 		if ( count($ret) > 0 )
 		{
 			foreach($ret as &$val)
 			{
-				$knUtil = plg_ProductImagesAddKN_Util::GetMy();
+				$knUtil = plg_ProductImagesAddKN_Util::getMy();
 				// キャッシュディレクトリから削除
-				$knUtil->GlobDeleteCashImages('*$*$'.$val['product_id'].'$*');
+				$knUtil->globDeleteCashImages('*$*$'.$val['product_id'].'$*');
 			}
 		}
 		// 削除処理
 		$q  = "DELETE FROM ".$this->m_table." WHERE product_id IN (SELECT product_id FROM(";
 		$q .= $selectQ;
 		$q .= ")as pp)";
-							  
-		$ret = $this->Query($q, array(), false, null, MDB2_PREPARE_MANIP);
-		$this->Commit($isTransaction);
-		
+
+		$ret = $this->query($q, array(), false, null, MDB2_PREPARE_MANIP);
+		$this->commit($isTransaction);
+
 		return $ret;
 	}
-	
+
 	/**
 	 * キャッシュ画像ファイル名から削除する
-	 * 
+	 *
 	 * @param string  $fileName	  キャッシュ画像ファイル名
 	 * @param boolean $isTransaction トランザクション処理をするか？
 	 * @return int
 	 */
-	public function DeleteFromFileName($fileName,$isTransaction=false)
+	public function deleteFromFileName($fileName,$isTransaction=false)
 	{
-		$this->Begin($isTransaction);
-		
+		$this->begin($isTransaction);
+
 		$q  = "DELETE FROM ".$this->m_table." WHERE file_name='{$fileName}'";
-							  
-		$ret = $this->Query($q, array(), false, null, MDB2_PREPARE_MANIP);
-		$this->Commit($isTransaction);
-		
+
+		$ret = $this->query($q, array(), false, null, MDB2_PREPARE_MANIP);
+		$this->commit($isTransaction);
+
 		return $ret;
 	}
-	
+
 	/**
 	 * [商品ID]リンクを失った数を取得します。
-	 * 
+	 *
 	 * @return int
 	 */
-	public function GeNumThatLostProductIdLink()
+	public function geNumThatLostProductIdLink()
 	{
 		$q  = "SELECT count(*) as cnt FROM ".$this->m_table." as p ";
 		$q .= "LEFT JOIN dtb_products as d ON p.product_id = d.product_id ";
 		$q .= "WHERE p.product_id > 0 AND (d.del_flg = 1 OR d.product_id IS NULL) ";
-			
-		$ret = $this->DB()->getAll($q);
+
+		$ret = $this->db()->getAll($q);
 		if ( count($ret) > 0 )
 			return $ret[0]['cnt'];
 		return 0;
-	}	
-	
-	
+	}
+
+
 	/**
 	 * インストール
 	 * Installはプラグインのインストール時に実行されるようにしてください。
@@ -530,7 +525,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 	 * @param  array $arrTableList 存在するテーブル名の配列
 	 * @return void
 	 */
-	public function Install($arrPlugin, $arrTableList)
+	public function install($arrPlugin, $arrTableList)
 	{
 		try {
 			$sqlval = "";
@@ -548,7 +543,7 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 				$sqlval .= "  create_tm timestamp NOT NULL ";
 				$sqlval .= ");";
 				// テーブル作成
-				if ( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table);
+				if ( !$this->db()->exec($sqlval) )throw new Exception($this->m_table);
 			}
 		}
 		catch (Exception $e)
@@ -559,4 +554,3 @@ class plg_ProductImagesAddKN_DB_CashImg extends plg_ProductImagesAddKN_DB_Base
 		return true;
 	}
 }
-?>

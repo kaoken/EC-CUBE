@@ -9,7 +9,12 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/plg_ProductImages
 
 class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 {
+	/**
+	 * @var null|plg_ProductImagesAddKN_Util
+	 */
 	protected $m_knUtil = null;
+
+
 	/**
 	 * Page を初期化する.
 	 *
@@ -18,16 +23,14 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 	public function init()
 	{
 		parent::init();
- 		$knUtil = plg_ProductImagesAddKN_Util::GetMy();
+		$knUtil = plg_ProductImagesAddKN_Util::getMy();
 		$plugin = SC_Plugin_Util_Ex::getPluginByPluginCode('ProductImagesAddKN');
-		$this->tpl_mainpage = $knUtil->GetTemplatePath('config/admin','Config');
+		$this->tpl_mainpage = $knUtil->getTemplatePath('config/admin','Config');
 		$this->tpl_subtitle = $plugin['plugin_name'];
 	}
-	
+
 	/**
 	 * Page のプロセス
-	 *
-	 * @return void
 	 */
 	public function process()
 	{
@@ -37,20 +40,18 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 
 	/**
 	 * Page のアクション.
-	 *
-	 * @return void
 	 */
 	public function action()
 	{
- 		$knUtil = plg_ProductImagesAddKN_Util::GetMy();
+		$knUtil = plg_ProductImagesAddKN_Util::getMy();
 		$plugin = SC_Plugin_Util_Ex::getPluginByPluginCode('ProductImagesAddKN');
 		// DB
-		$dbAllowableSize = $knUtil->GetDB('AllowableSize');
-		$dbCashImg = $knUtil->GetDB('CashImg');
-		$dbConfig = $knUtil->GetDB('Config');
-		$dbImg = $knUtil->GetDB('ProductImg');
-		$dbTmpID = $knUtil->GetDB('TmpID');
-		
+		$dbAllowableSize = $knUtil->getDB('AllowableSize');
+		$dbCashImg = $knUtil->getDB('CashImg');
+		$dbConfig = $knUtil->getDB('Config');
+		$dbImg = $knUtil->getDB('ProductImg');
+		$dbTmpID = $knUtil->getDB('TmpID');
+
 		// 通常
 		$objDefaultFP = new plg_ProductImagesAddKN_SC_FormParam_Ex();
 		$this->lfInitParamDefault($objDefaultFP);
@@ -66,14 +67,14 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 		$this->lfInitDelCashFiles($objOldCahsFP);
 		$objOldCahsFP->setParam($_POST);
 		$objOldCahsFP->convParam();
-		
+
 		//
 
 
-		$aAddSize = array();	   
+		$aAddSize = array();
 		// プラグイン情報を取得
-		$arrForm = $dbConfig->Get();
-		
+		$arrForm = $dbConfig->get();
+
 		switch ($this->getMode())
 		{
 			case 'edit':
@@ -83,24 +84,24 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 				if (count($this->arrErr) == 0) {
 					// データ更新
 					//SC_Utils::sfPrintR( $objDefaultFP);
-					if (  ($ret = $dbConfig->Update($arrForm)) === false )
+					if (  ($ret = $dbConfig->update($arrForm)) === false )
 					{
-						$this->arrErr["update_failure"]=true;  
+						$this->arrErr["update_failure"]=true;
 					}
-					
+
 					if (count($this->arrErr) == 0) {
 						$this->alertMsg = "更新しました。";
 					}
 
 				}
-			   break;
+				break;
 			case 'add':
 				$aAddSize = $objAddSizeFP->getHashArray();
 				$this->aErrAddSize = $objAddSizeFP->checkError();
 				// エラーなしの場合にはデータを更新
 				if (count($this->aErrAddSize) == 0)
-				{		 
-					if ( $dbAllowableSize->Insert($aAddSize,$this->aErrAddSize) === true )
+				{
+					if ( $dbAllowableSize->insert($aAddSize,$this->aErrAddSize) === true )
 					{
 						$this->alertMsg = "追加しました。";
 					}
@@ -110,11 +111,11 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 				$aAddSize = $objAddSizeFP->getHashArray();
 				$this->aErrAddSize = $objAddSizeFP->checkError();
 				if (count($this->aErrAddSize) == 0)
-				{				
-					if ( $dbAllowableSize->Delete($aAddSize,$this->aErrAddSize) === true )
+				{
+					if ( $dbAllowableSize->delete($aAddSize,$this->aErrAddSize) === true )
 					{
 						$this->alertMsg = "幅：".$aAddSize['width']." 高さ：".$aAddSize['height']."px を削除しました。";
-					}   
+					}
 				}
 				break;
 			case 'old_chas_del':
@@ -124,7 +125,7 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 				// エラーなしの場合にはデータを更新
 				if (count($this->aErrAddSize) == 0)
 				{
-					if ( ($delNum = $dbCashImg->DeleteOldImgs($aOldCash['days'],true)) !== -1 )
+					if ( ($delNum = $dbCashImg->deleteOldImgs($aOldCash['days'],true)) !== -1 )
 					{
 						$this->alertMsg = "{$delNum} 個 キャッシュ画像ファイルを削除しました。";
 					}
@@ -133,74 +134,74 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 						$this->alertMsg = "古いキャッシュ画像ファイル削除に失敗しました。";
 					}
 				}
-				
+
 				break;
 			case 'lost_clean':
-				$dbImg->Begin();		
-				$dbImg->DeleteLostProductIdLink();
-				$dbCashImg->DeleteLostProductIdLink();
-				$dbImg->Commit();
+				$dbImg->begin();
+				$dbImg->deleteLostProductIdLink();
+				$dbCashImg->deleteLostProductIdLink();
+				$dbImg->commit();
 				$this->alertMsg = "リンク切れを削除しました。";
 				break;
 			default:
 				// プラグイン情報を取得
-				$arrForm = $dbConfig->Get();
-				
+				$arrForm = $dbConfig->get();
+
 				break;
 		}
-		
+
 		//---------------------------
 		// 情報
 		//---------------------------
 		// 許容幅高さテーブルサイズ
-		//$this->aInfo['tb_size_ar'] = $dbAllowableSize->GetTableSize();
+		//$this->aInfo['tb_size_ar'] = $dbAllowableSize->getTableSize();
 		// キャッシュイメージテーブルサイズ
-		//$this->aInfo['tb_size_cash'] = $dbCashImg->GetTableSize();
+		//$this->aInfo['tb_size_cash'] = $dbCashImg->getTableSize();
 		// コンフィグテーブルサイズ
-		//$this->aInfo['tb_size_config'] = $dbConfig->GetTableSize();
+		//$this->aInfo['tb_size_config'] = $dbConfig->getTableSize();
 		// 商品画像テーブルサイズ
-		$this->aInfo['tb_size_img'] = $dbImg->GetTableSize();
+		$this->aInfo['tb_size_img'] = $dbImg->getTableSize();
 		// 一時IDテーブルサイズ
-		//$this->aInfo['tb_size_tmp'] = $dbTmpID->GetTableSize();
-	  	
+		//$this->aInfo['tb_size_tmp'] = $dbTmpID->getTableSize();
+
 		// 商品とリンク切れ
-		$this->aInfo['lost_product_img_num'] = $dbImg->GeNumThatLostProductIdLink();
-		$this->aInfo['lost_cash_num'] = $dbCashImg->GeNumThatLostProductIdLink();
-		
+		$this->aInfo['lost_product_img_num'] = $dbImg->geNumThatLostProductIdLink();
+		$this->aInfo['lost_cash_num'] = $dbCashImg->geNumThatLostProductIdLink();
+
 		// キャッシュ画像ファイル数
-		$this->aInfo['cash_img_num'] = $dbCashImg->GetNum();
+		$this->aInfo['cash_img_num'] = $dbCashImg->getNum();
 		// 商品画像ファイル数
-		$this->aInfo['img_id'] = $dbImg->GetNum();
+		$this->aInfo['img_id'] = $dbImg->getNum();
 		//
 		$this->aInfo['max_execution_time'] = intval(ini_get('max_execution_time'));
 
-		
+
 		// キャッシュディレクトリの合計ファイルサイズおよびファイル数の取得
-		$chasImgPath = $knUtil->GetHtmlDirPath('/cash_images');
-		$aFileInfo = $knUtil->GetDirFileSize($chasImgPath);
+		$chasImgPath = $knUtil->getHtmlDirPath('/cash_images');
+		$aFileInfo = $knUtil->getDirFileSize($chasImgPath);
 		$this->aInfo['chas_imgs_size'] = $aFileInfo['size'];
 		$this->aInfo['cash_img_num'] = $aFileInfo['num'];
-		
+
 		//
 		if ( !isset($aOldCash['days']) )
 			$this->aInfo['days'] = 31;
 		else
 			$this->aInfo['days'] = $aOldCash['days'];
-		
-		
+
+
 		// ブラウザーのスクロール位置
 		$this->aInfo['scroll_x'] = intval($_POST['scroll_x']);
 		$this->aInfo['scroll_y'] = intval($_POST['scroll_y']);
-		
-		
+
+
 		$this->arrForm = $arrForm;
 		$this->aAddSize = $aAddSize;
-		
+
 		// 許容サイズリスト取得
-		$this->aSizeList = $dbAllowableSize->GetList();
+		$this->aSizeList = $dbAllowableSize->getList();
 		// プラグインが有効か？
 		$this->plgEnable = $plugin['enable'] == 1;
-		
+
 		$this->setTemplate($this->tpl_mainpage);
 	}
 
@@ -217,8 +218,7 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 	/**
 	 * 基本パラメーター情報の初期化
 	 *
-	 * @param plg_ProductImagesAddKN_SC_FormParam_Ex $objDefaultFP SC_FormParamインスタンス
-	 * @return void
+	 * @param plg_ProductImagesAddKN_SC_FormParam_Ex $objFP SC_FormParamインスタンス
 	 */
 	private function lfInitParamDefault(&$objFP)
 	{
@@ -233,8 +233,7 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 	/**
 	 * サイズ追加パラメーター情報の初期化
 	 *
-	 * @param plg_ProductImagesAddKN_SC_FormParam_Ex $objDefaultFP SC_FormParamインスタンス
-	 * @return void
+	 * @param plg_ProductImagesAddKN_SC_FormParam_Ex $objFP SC_FormParamインスタンス
 	 */
 	private function lfInitParamAddSize(&$objFP)
 	{
@@ -245,13 +244,10 @@ class plg_ProductImagesAddKN_LC_Page_Config extends LC_Page_Admin_Ex
 	/**
 	 * サイズ追加パラメーター情報の初期化
 	 *
-	 * @param plg_ProductImagesAddKN_SC_FormParam_Ex $objDefaultFP SC_FormParamインスタンス
-	 * @return void
+	 * @param plg_ProductImagesAddKN_SC_FormParam_Ex $objFP SC_FormParamインスタンス
 	 */
 	private function lfInitDelCashFiles(&$objFP)
 	{
 		$objFP->addParamNumLimit('日数', 'days', 0,9999);
 	}
 }
-
-?>

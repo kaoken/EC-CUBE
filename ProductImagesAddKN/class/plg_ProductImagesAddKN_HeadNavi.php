@@ -4,7 +4,7 @@
  *
  * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
- * http://www.kaoken.net/
+ * http://www.kaoken.cg0.org/
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,24 +21,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 // メモ：print_r($this)で見ると、Smarty.class.php 内で呼ばれている
+$arrPageLayout = $this->get_template_vars('arrPageLayout');
+switch($arrPageLayout['device_type_id']) {
+	case 1:
+		break;
+	case 2:
+		break;
+	case 10:
+		break;
+	default:
 
-$arrPageLayout = $this->get_template_vars('arrPageLayout'); 
-switch($arrPageLayout['device_type_id'])
-{ 
-	case 1: 
-		break; 
-	case 2: 
-		break; 
-	case 10: 
-		break; 
-	default: 
-		if ( preg_match('/admin\/products\/product\.php$/',$_SERVER['PHP_SELF']) )
-		{
+		if ( preg_match("@".ADMIN_DIR."products/product.php$@",$_SERVER['PHP_SELF']) ) {
 			// 管理画面：商品登録｜編集画面の時
-			$knUtil = plg_ProductImagesAddKN_Util::GetMy();
+			$knUtil = plg_ProductImagesAddKN_Util::getMy();
 
-			$path = $knUtil->GetTemplatePath('/products/admin','Header');
+			$path = $knUtil->getTemplatePath('/products/admin','Header');
 			$this->display($path);
 		}
 }
-?>

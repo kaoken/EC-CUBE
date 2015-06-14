@@ -4,7 +4,7 @@
  *
  * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
- * http://www.kaoken.net/
+ * http://www.kaoken.cg0.org/
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ require_once CLASS_EX_REALDIR . 'SC_FormParam_Ex.php';
 
 /**
  * plg_ProductImagesAddKN_SC_FormParam_Ex
- * 
+ *
  * @package SC
  * @author kaoken
  * @copyright kaoken
@@ -35,41 +35,38 @@ require_once CLASS_EX_REALDIR . 'SC_FormParam_Ex.php';
 class plg_ProductImagesAddKN_SC_FormParam_Ex extends SC_FormParam_Ex
 {
 	protected $m_numMinMax = array();
-	
+
 	/**
 	 * 数値かつ、範囲指定をする
-	 * 
+	 *
 	 * @param string $disp_name
 	 * @param string $keyname
 	 * @param int $min 最大値
 	 * @param int $max 最小値
-	 * @param array $aKeyname 
-	 * @return void
 	 */
-	public function addParamNumLimit($disp_name, $keyname,$min,$max, $aCheck=array('EXIST_CHECK'))
+	public function addParamNumLimit($disp_name, $keyname, $min, $max, $aCheck=array('EXIST_CHECK'))
 	{
-		if ( array_key_exists( $keyname, $this->m_numMinMax) )
-		{
+		if ( array_key_exists( $keyname, $this->m_numMinMax) ) {
 			$this->m_numMinMax[$keyname][0] = $min;
 			$this->m_numMinMax[$keyname][1] = $max;
 			return;
 		}
+
 		$this->m_numMinMax[$keyname] = array($min,$max);
-		if ( !array_key_exists( $keyname, $this->arrCheck ) )
-		{
+		if ( !array_key_exists( $keyname, $this->arrCheck ) ) {
 			$aCheck += array('NUM_CHECK', 'SPTAB_CHECK', 'MAX_LENGTH_CHECK',"MINMAX_CHECK");
-			$lenMin = strlen($min+"");
-			$lenMax = strlen($max+"");
+			$lenMin = strlen($min."");
+			$lenMax = strlen($max."");
 			$len = $lenMin > $lenMax  ? $lenMin : $lenMax;
 			$this->addParam($disp_name, $keyname, $len, 'n', $aCheck);
-	   }
+		}
 	}
 
 	/**
 	 * エラーチェック
-	 * 
+	 *
 	 * @param bool $br
-	 * @return
+	 * @return array
 	 */
 	public function checkError($br = true)
 	{
@@ -144,4 +141,3 @@ class plg_ProductImagesAddKN_SC_FormParam_Ex extends SC_FormParam_Ex
 		return $arrErr;
 	}
 }
-?>

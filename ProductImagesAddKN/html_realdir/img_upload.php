@@ -4,7 +4,7 @@
  *
  * Copyright(c) kaoken All Rights Reserved.
  *
- * http://www.kaoken.net/
+ * http://www.kaoken.cg0.org/
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,5 +27,3 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/plg_ProductImages
 $objPage = new plg_ProductImagesAddKN_ProductsImgMgr();
 $objPage->init();
 $objPage->process();
-
-?>

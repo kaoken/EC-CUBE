@@ -4,7 +4,7 @@
  *
  * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
- * http://www.kaoken.net/
+ * http://www.kaoken.cg0.org/
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,75 +24,73 @@
 require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/db/plg_ProductImagesAddKN_DB_Base.php';
 
 /**
-* ProductImagesAddKNプラグイン キャッシュイメージ関連のDBクラス
-*
-* @package ProductImagesAddKN
-* @author kaoken
-* @since PHP 5.3　
-* @version 1.0
-*/
+ * ProductImagesAddKNプラグイン キャッシュイメージ関連のDBクラス
+ *
+ * @package ProductImagesAddKN
+ * @author kaoken
+ * @since PHP 5.3　
+ * @version 1.0
+ */
 class plg_ProductImagesAddKN_DB_Config extends plg_ProductImagesAddKN_DB_Base
 {
 	/**
 	 * コンストラクタ
-	 *
-	 * @return void
 	 */
 	public function __construct()
 	{
 		parent::__construct();
-		$this->m_table = self::TABLE_CONFIG;	
-				
-		$this->InitVar('id', self::TYPE_INT, 0, false, 255);
-		$this->InitVar('version', self::TYPE_INT, 10000, false);
-		$this->InitVar('compression_rate', self::TYPE_INT, 80, true);
-		$this->InitVar('product_img_copy', self::TYPE_INT, 0, true);
-		$this->InitVar('product_img_max_size', self::TYPE_INT, 1, true);
-		$this->InitVar('product_img_upload_max', self::TYPE_INT, 32, true);
-		$this->InitVar('product_img_max_width', self::TYPE_INT, 9999, true);
-		$this->InitVar('product_img_max_height', self::TYPE_INT, 9999, true);
+		$this->m_table = self::TABLE_CONFIG;
+
+		$this->initVar('id', self::TYPE_INT, 0, false, 255);
+		$this->initVar('version', self::TYPE_INT, 10000, false);
+		$this->initVar('compression_rate', self::TYPE_INT, 80, true);
+		$this->initVar('product_img_copy', self::TYPE_INT, 0, true);
+		$this->initVar('product_img_max_size', self::TYPE_INT, 1, true);
+		$this->initVar('product_img_upload_max', self::TYPE_INT, 32, true);
+		$this->initVar('product_img_max_width', self::TYPE_INT, 9999, true);
+		$this->initVar('product_img_max_height', self::TYPE_INT, 9999, true);
 	}
-		
+
 	/**
 	 * プラグインのコンフィグ情報取得
-	 * 
+	 *
 	 * @return array
 	 */
-	public function Get()
+	public function get()
 	{
 		// 現在DBに存在するテーブル一覧を取得
 		$where = "id = 0";
-		$arrColumns = $this->DB()->select("*", $this->m_table, $where);
+		$arrColumns = $this->db()->select("*", $this->m_table, $where);
 		if ( count($arrColumns) != 0 )
 		{
-			$this->DataTypeCastFromColumn($arrColumns[0]);
-		 	return $arrColumns[0];
+			$this->dataTypeCastFromColumn($arrColumns[0]);
+			return $arrColumns[0];
 		}
 		return array();
 	}
-	
+
 	/**
 	 * プラグインのコンフィグ情報更新
-	 * 
+	 *
 	 * @param array $aConfig コンフィグ情報
 	 * @return boolean
 	 */
-	public function Update($aConfig)
+	public function update($aConfig)
 	{
-		$this->Begin();
-		$where = "id = 0";		
-		if ( $this->DB()->update($this->m_table, $aConfig, $where) === false )
+		$this->begin();
+		$where = "id = 0";
+		if ( $this->db()->update($this->m_table, $aConfig, $where) === false )
 		{
-			$this->Rollback();
+			$this->rollback();
 			return false;
 		}
 		else
 		{
-			$this->Commit();
+			$this->commit();
 		}
 		return true;
 	}
-	
+
 	/**
 	 * インストール
 	 * Installはプラグインのインストール時に実行されるようにしてください。
@@ -102,7 +100,7 @@ class plg_ProductImagesAddKN_DB_Config extends plg_ProductImagesAddKN_DB_Base
 	 * @param  array $arrTableList 存在するテーブル名の配列
 	 * @return void
 	 */
-	public function Install($arrPlugin, $arrTableList)
+	public function install($arrPlugin, $arrTableList)
 	{
 		try {
 			// プラグイン設定テーブル
@@ -137,7 +135,7 @@ class plg_ProductImagesAddKN_DB_Config extends plg_ProductImagesAddKN_DB_Base
 					$sqlval .= ");";
 				}
 				// テーブル作成
-				if ( !$this->DB()->exec($sqlval) )throw new Exception($this->m_table);
+				if ( !$this->db()->exec($sqlval) )throw new Exception($this->m_table);
 				// 初期コンフィグデータ 挿入
 				$sqlval = array(
 					"id"=>0,
@@ -149,7 +147,7 @@ class plg_ProductImagesAddKN_DB_Config extends plg_ProductImagesAddKN_DB_Base
 					"product_img_max_width"=>9999,
 					"product_img_max_height"=>9999
 				);
-				$this->DB()->insert($this->m_table, $sqlval);
+				$this->db()->insert($this->m_table, $sqlval);
 			}
 		}
 		catch (Exception $e)
@@ -161,4 +159,3 @@ class plg_ProductImagesAddKN_DB_Config extends plg_ProductImagesAddKN_DB_Base
 	}
 
 }
-?>

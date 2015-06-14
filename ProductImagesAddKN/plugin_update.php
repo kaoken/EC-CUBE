@@ -21,4 +21,3 @@ class plugin_update{
 		// nop
 	}
 }
-?>

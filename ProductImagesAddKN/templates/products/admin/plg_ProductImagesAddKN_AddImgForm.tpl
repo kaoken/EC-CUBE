@@ -3,7 +3,7 @@
  *
  * Copyright(c) kaoken All Rights Reserved.
  *
- * http://www.kaoken.net/
+ * http://www.kaoken.cg0.org/
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -55,7 +55,7 @@
 			<div class="kn_product_image_priority">
 				<input type="hidden" name="kn_product_img_priority_now${file.id}" id="kn_product_img_priority_now${file.id}" value="${file.priority}" />
 				<input type="text" name="kn_product_img_priority${file.id}" id="kn_product_img_priority${file.id}" class="box4" maxlength="4" value="${file.priority}" />
-				<input type="button" name="kn_product_img_priority_btn"value="移動" onclick="ChangePriority(${file.id})" />
+				<input type="button" name="kn_product_img_priority_btn"value="移動" onclick="changePriority(${file.id})" />
 			</div>
 		</div>
 </script>
@@ -237,7 +237,7 @@
 })($j1_10_2);
 
 
-function ChangePriority(img_id)
+function changePriority(img_id)
 {
 (function ($) {
 	var priorityID = '#kn_product_img_priority'+img_id;

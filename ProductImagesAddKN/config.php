@@ -1,11 +1,10 @@
 <?php
-
 /*
  * ProductImagesAddKN
  *
  * Copyright(c) kaoken All Rights Reserved.
  *
- * http://www.kaoken.net/
+ * http://www.kaoken.cg0.org/
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,4 +30,3 @@ $objPage = new plg_ProductImagesAddKN_LC_Page_Config();
 register_shutdown_function(array($objPage, 'destroy'));
 $objPage->init();
 $objPage->process();
-?>

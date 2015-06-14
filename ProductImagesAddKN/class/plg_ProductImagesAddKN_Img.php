@@ -4,7 +4,7 @@
  *
  * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
- * http://www.kaoken.net/
+ * http://www.kaoken.cg0.org/
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,43 +24,43 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/util/plg_ProductI
 require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/plg_ProductImagesAddKN_SC_FormParam_Ex.php';
 
 /**
-* ProductImagesAddKNプラグイン画像クラス
-*
-* @package ProductImagesAddKN
-* @author kaoken
-* @since PHP 5.3　
-* @version 1.0
-*/
+ * ProductImagesAddKNプラグイン画像クラス
+ *
+ * @package ProductImagesAddKN
+ * @author kaoken
+ * @since PHP 5.3　
+ * @version 1.0
+ */
 class plg_ProductImagesAddKN_Img
 {
 	protected $m_aConfig = array();
+	/**
+	 * @var null|plg_ProductImagesAddKN_Util
+	 */
 	protected $m_knUtil = null;
 
 	/**
 	 * コンストラクタ
-	 *
-	 * @return void
 	 */
 	public function __construct($aConfig=array())
-	{		
-		$this->m_knUtil = plg_ProductImagesAddKN_Util::GetMy();
+	{
+		$this->m_knUtil = plg_ProductImagesAddKN_Util::getMy();
 		if ( count($aConfig) == 0 )
 		{
-			$db = $this->m_knUtil->GetDB('Config');
-			$this->m_aConfig = $db->Get();
+			$db = $this->m_knUtil->getDB('Config');
+			$this->m_aConfig = $db->get();
 		}
 		else
 			$this->m_aConfig = $aConfig;
-			
+
 	}
 
 	/**
-	 * InitParam()
-	 * 
+	 * initParam()
+	 *
 	 * @param mixed $objFormParam
-	 * @return
 	 */
-	protected static function InitParam(&$objFormParam)
+	protected static function initParam(&$objFormParam)
 	{
 		$objFormParam->addParam('商品画像ID', 'img_id', INT_LEN, 'n',  array('NUM_CHECK', 'MAX_LENGTH_CHECK'));
 		$objFormParam->addParam('商品ID', 'product_id', INT_LEN, 'n',  array('NUM_CHECK', 'MAX_LENGTH_CHECK'));
@@ -77,11 +77,11 @@ class plg_ProductImagesAddKN_Img
 
 	/**
 	 * 商品画像のパスを取得する
-	 * 
+	 *
 	 * @param array $arrForm
-	 * @return
+	 * @return string ファイル名
 	 */
-	public function GetProductImage($arrForm)
+	public function getProductImage($arrForm)
 	{
 		$objQuery = SC_Query_Ex::getSingletonInstance();
 		$table = 'dtb_products';
@@ -102,19 +102,18 @@ class plg_ProductImagesAddKN_Img
 	 * ファイル名の形式をチェック.
 	 *
 	 * @deprecated 2.13.0 商品IDを渡す事を推奨
-	 * @param $image
+	 * @param string $image
 	 * @return boolean 正常な形式:true 不正な形式:false
 	 */
-	public function CheckFileName($image)
+	public function checkFileName($image)
 	{
 		$file = trim($image);
 		if (!preg_match("/^[[:alnum:]_\.-]+$/i", $file)) {
 			return false;
-		} else {
-			return true;
 		}
-	}	
-	
+		return true;
+	}
+
 	/**
 	 * 指定した幅高さに比率固定で縮小する
 	 *
@@ -125,7 +124,7 @@ class plg_ProductImagesAddKN_Img
 	 * @param integer $flg
 	 * @return array
 	 */
-	public function RatioFixation($w, $h, $rSrcW, $rSrcH, $flg = 0)
+	public function ratioFixation($w, $h, $rSrcW, $rSrcH, $flg = 0)
 	{
 		$aRet = array($rSrcW, $rSrcH);
 		// 指定サイズの比率に合わせる
@@ -151,21 +150,21 @@ class plg_ProductImagesAddKN_Img
 			if ($h > $aRet[1]){
 				$rate = $h/$aRet[1];
 				if ((int)($rate * $aRet[0]) < $w){
-				  $aRet[0] = (int)($rate * $aRet[0]);
-				  $aRet[1] = (int)($rate * $aRet[1]);
+					$aRet[0] = (int)($rate * $aRet[0]);
+					$aRet[1] = (int)($rate * $aRet[1]);
 				}
 			}
 		}
 		return $aRet;
 	}
-	
+
 	/**
 	 * 画像がないときに描画させるためのもの
-	 * 
+	 *
 	 * @param integer $type
-	 * @return
+	 * @return bool
 	 */
-	public function DrawErrImage($type=0)
+	public function drawErrImage($type=0)
 	{
 		$path = PLUGIN_HTML_REALDIR."/ProductImagesAddKN/img";
 		switch( $type )
@@ -193,16 +192,16 @@ class plg_ProductImagesAddKN_Img
 		}
 		return true;
 	}
-	
+
 	/**
 	 * 画像がないときにURLパス返す。
-	 * 
+	 *
 	 * @param integer $type
-	 * @return
+	 * @return string
 	 */
-	public function DrawErrImageURL($type=0)
+	public function drawErrImageURL($type=0)
 	{
-		$path = $this->GetUrl().'plugin/'.$this->m_knUtil->GetPluginName().'/img/';
+		$path = $this->getUrl().'plugin/'.$this->m_knUtil->getPluginName().'/img/';
 		switch( $type )
 		{
 			case 0:
@@ -216,21 +215,21 @@ class plg_ProductImagesAddKN_Img
 		}
 		return $path."no_img.gif";
 	}
-	
-	
+
+
 	/**
 	 * 商品画像をアップロードする
-	 * 
+	 *
 	 * @param object $file
 	 * @param string $uploaded_file 幅
-	 * @return
+	 * @return int|bool 何らかのエラーの時はfalseを返す。
 	 */
-	public function UploadImg(&$file, $uploaded_file)
-	{	
-		$dbImg = $this->m_knUtil->GetDB('ProductImg');
+	public function uploadImg(&$file, $uploaded_file)
+	{
+		$dbImg = $this->m_knUtil->getDB('ProductImg');
 
 		$objImage = new Imagick();
-		
+
 		$ret = $objImage->readImageBlob(@file_get_contents($uploaded_file));
 		@unlink($uploaded_file);
 
@@ -238,43 +237,43 @@ class plg_ProductImagesAddKN_Img
 		{
 			$objImage->destroy();
 			$file->errorNo = 300;
-			return;
+			return false;
 		}
-		$aInsert = $dbImg->GetRequiredColumn();
+		$aInsert = $dbImg->getRequiredColumn();
 		$aInsert['width'] = $objImage->getImageWidth();
 		$aInsert['height'] = $objImage->getImageHeight();
 		$aInsert['mime'] = $file->type;
 		$aInsert['product_id'] = $file->product_id;
 		$aInsert['imgdat'] = $objImage->getimageblob();
 		$objImage->destroy();
-	
+
 
 		// 挿入処理
-		$dbImg->Begin();
+		$dbImg->begin();
 
 		if ( DB_TYPE == 'pgsql')
-			$dbImg->PsqlLockMyTable('SHARE UPDATE EXCLUSIVE MODE');
+			$dbImg->psqlLockMyTable('SHARE UPDATE EXCLUSIVE MODE');
 		else
-			$dbImg->MysqlLockMyTable();
-		
-		$num = $dbImg->GetNumFromProductID($file->product_id);
+			$dbImg->mysqlLockMyTable();
+
+		$num = $dbImg->getNumFromProductID($file->product_id);
 		if ( $num >= $this->m_aConfig['product_img_upload_max'] )
 		{
 			$file->errorNo = 301;
-			$dbImg->Rollback();
+			$dbImg->rollback();
 			return false;
 		}
-			
-		$id = $dbImg->Insert($aInsert,false);
-		
+
+		$id = $dbImg->insert($aInsert,false);
+
 		if ( $id === false )
 		{
 			$file->error = 'DBへの挿入が失敗しました。';
-			$dbImg->Rollback();
+			$dbImg->rollback();
 		}
 		else
-			$dbImg->Commit();
-		
+			$dbImg->commit();
+
 		$file->id = $id;
 		$file->date = date("Y年m月d日 H：i", time());
 		$file->width = $aInsert['width'];
@@ -285,13 +284,13 @@ class plg_ProductImagesAddKN_Img
 
 	/**
 	 * 指定した幅高さに比率固定で縮小する
-	 * 
+	 *
 	 * @param array     $aPara
 	 * @param boolean   $isFile 画像ファイルの処理か？trueの場合画像ファイル、flaseの場合DBを使った商品画像処理
 	 * @param boolean   $isURL  trueの場合URLを取得する。falseの場合画像を出力する
-	 * @return
+	 * @return boolean
 	 */
-	public function CashImage($aPara, $isFile=true, $isURL=false)
+	public function cashImage($aPara, $isFile=true, $isURL=false)
 	{
 		$aPara['img_id']=intval($aPara['img_id']);
 		$aPara['product_id']=intval($aPara['product_id']);
@@ -301,16 +300,16 @@ class plg_ProductImagesAddKN_Img
 
 		$isTmpDir = false;
 		// DB
-		$dbAllowableSize = $this->m_knUtil->GetDB('AllowableSize');
-		$dbCashImg = $this->m_knUtil->GetDB('CashImg');
-		$dbImg = $this->m_knUtil->GetDB('ProductImg');
-		
+		$dbAllowableSize = $this->m_knUtil->getDB('AllowableSize');
+		$dbCashImg = $this->m_knUtil->getDB('CashImg');
+		$dbImg = $this->m_knUtil->getDB('ProductImg');
+
 		$aCommon = array();
 		if ( $isFile )
 		{
 			// ソースファイルがイメージがない場合
 			if ( $aPara['src_file'] == NO_IMAGE_REALFILE )
-				return $isURL?$this->DrawErrImageURL():$this->DrawErrImage();
+				return $isURL?$this->drawErrImageURL():$this->drawErrImage();
 
 			// 簡易画像情報取得
 			$aInfo = @getimagesize($aPara['src_file']);
@@ -320,28 +319,28 @@ class plg_ProductImagesAddKN_Img
 			$aCommon['mime'] = $aInfo['mime'];
 			$aPara['mime'] = $aInfo['mime'];
 			unset($aInfo);
-		
+
 			// サイズが同じ場合、そのままファイルを出力
 			if ( ($aPara['width'] == $aCommon['width'] && $aPara['height'] == $aCommon['height']) ||
-				( $aPara['width'] == 0 && $aPara['height'] == 0 ))
+			     ( $aPara['width'] == 0 && $aPara['height'] == 0 ))
 			{
 				if ( $isURL )
 				{
-					return $this->GetUrl().'upload/save_image/'.basename($aPara['src_file']);
+					return $this->getUrl().'upload/save_image/'.basename($aPara['src_file']);
 				}
 				else
 				{
 					// 304 NotModifiedチェック			
-					if ( $this->m_knUtil->NotModifiedHeders(filemtime($aPara['src_file']), $aPara['src_file']) )
-						return;
+					if ( $this->m_knUtil->notModifiedHeaders(filemtime($aPara['src_file']), $aPara['src_file']) )
+						return false;
 					header('Content-type: '.$aCommon['mime']);
 					readfile($aPara['src_file']);
 					return true;
 				}
 			}
-			$aPara['ext'] = $this->m_knUtil->GetExtFromMIME($aCommon['mime']);
+			$aPara['ext'] = $this->m_knUtil->getExtFromMIME($aCommon['mime']);
 			// キャッシュがあるか？
-			if ( ($ret = $this->CashImagePrint($dbCashImg->Get($aPara),$dbCashImg,$isURL)) !== false )
+			if ( ($ret = $this->cashImagePrint($dbCashImg->get($aPara),$dbCashImg,$isURL)) !== false )
 				return $ret;
 		}
 		else
@@ -349,54 +348,54 @@ class plg_ProductImagesAddKN_Img
 			// キャッシュ画像が存在するか？
 			if ( $aPara['img_id'] != 0 )
 			{
-				if ( ($ret = $this->CashImagePrint($dbCashImg->GetFromPrductImgId_W_H_E($aPara),$dbCashImg,$isURL)) !== false )return $ret;
+				if ( ($ret = $this->cashImagePrint($dbCashImg->getFromPrductImgId_W_H_E($aPara),$dbCashImg,$isURL)) !== false )return $ret;
 			}
 			else
 			{
-				if ( ($ret = $this->CashImagePrint($dbCashImg->GetFromPrdouctIDAndPriority($aPara),$dbCashImg,$isURL)) !== false )return $ret;
+				if ( ($ret = $this->cashImagePrint($dbCashImg->getFromProductIDAndPriority($aPara),$dbCashImg,$isURL)) !== false )return $ret;
 			}
 			// 商品画像を取得する
 			if ( $aPara['img_id'] != 0 )
-				$aCommon = $dbImg->Get($aPara['img_id']);
+				$aCommon = $dbImg->get($aPara['img_id']);
 			else
 			{
-				$aCommon = $dbImg->GetFromPrdouctIDAndPriority($aPara['product_id'], $aPara['priority'],false);
+				$aCommon = $dbImg->getFromProductIDAndPriority($aPara['product_id'], $aPara['priority'],false);
 
 				$aPara['img_id'] = $aCommon['img_id'];
 			}
-			
+
 			if ( count($aCommon) == 0 )
-				return $isURL?$this->DrawErrImageURL(0):$this->DrawErrImage(0);
-			
+				return $isURL?$this->drawErrImageURL(0):$this->drawErrImage(0);
+
 			// サイズが同じ場合、そのままファイルを出力
 			if ( ($aPara['width'] == $aCommon['width'] && $aPara['height'] == $aCommon['height']) ||
-				( $aPara['width'] == 0 && $aPara['height'] == 0 ))
+			     ( $aPara['width'] == 0 && $aPara['height'] == 0 ))
 			{
 				if ( $isURL )
 				{
-					return $this->GetUrl().'resize_image.php?img_id='.$aCommon['img_id'];
+					return $this->getUrl().'resize_image.php?img_id='.$aCommon['img_id'];
 				}
 				else
 				{
 					// 304 NotModifiedチェック			
-					if ( $this->m_knUtil->NotModifiedHeders(strtotime($aCommon['create_tm']), $aCommon['img_id']) )
-						return;
+					if ( $this->m_knUtil->notModifiedHeaders(strtotime($aCommon['create_tm']), $aCommon['img_id']) )
+						return false;
 					header("Content-type: ".$aCommon['mime']);
 					echo $aCommon['imgdat'];
 					return true;
 				}
 			}
-            // 商品IDが一時的なものかチェック
-            $isTmpDir = $aCommon['product_id'] <= 0;
+			// 商品IDが一時的なものかチェック
+			$isTmpDir = $aCommon['product_id'] <= 0;
 		}
 		//---------------
 		// ここから共通
 		//---------------
-		
+
 		// 登録された 幅、高さ のサイズか？
-		if ( !$dbAllowableSize->Check($aPara['width'], $aPara['height']) )
-			return $isURL?$this->DrawErrImageURL(1):$this->DrawErrImage(1);
-		
+		if ( !$dbAllowableSize->check($aPara['width'], $aPara['height']) )
+			return $isURL?$this->drawErrImageURL(1):$this->drawErrImage(1);
+
 		if ( $isFile )
 		{
 			$objImage = new Imagick($aPara['src_file']);
@@ -407,46 +406,46 @@ class plg_ProductImagesAddKN_Img
 			if ( !$objImage->readImageBlob($aCommon['imgdat']) )
 			{
 				$objImage->destroy();
-				return $isURL?$this->DrawErrImageURL():$this->DrawErrImage();
+				return $isURL?$this->drawErrImageURL():$this->drawErrImage();
 			}
 			// サイズが大きい場合があるので、先に解放しておく
-			unset($aCommon['imgdat']);		
+			unset($aCommon['imgdat']);
 		}
-		
+
 		// 圧縮率
 		$objImage->setCompressionQuality($this->m_aConfig['compression_rate']);
-		
+
 
 		if ($aPara['width'] < $aCommon['width'] || $aPara['height'] < $aCommon['height'])
 		{
-			$aWH = $this->RatioFixation($aPara['width'],$aPara['height'],$aCommon['width'],$aCommon['height']);
+			$aWH = $this->ratioFixation($aPara['width'],$aPara['height'],$aCommon['width'],$aCommon['height']);
 			$objImage->thumbnailImage($aWH[0],$aWH[1]);
 			unset($aWH);
 		}
-		
-		$aInsert = $dbCashImg->GetRequiredColumn($aCommon);
+
+		$aInsert = $dbCashImg->getRequiredColumn($aCommon);
 		$aInsert['img_file']= $aPara['src_file']!=''?basename($aPara['src_file']):'';
 		$aInsert['img_id']  = $aPara['img_id'];
 		$aInsert['width']   = $aPara['width'];
 		$aInsert['height'] = $aPara['height'];
 		$aInsert['effect'] = $aPara['effect'];
-		$aInsert['ext']	= $this->m_knUtil->GetExtFromMIME($aCommon['mime']);
+		$aInsert['ext']	= $this->m_knUtil->getExtFromMIME($aCommon['mime']);
 
 		// 縮小したやつを挿入
-		if ( $dbCashImg->Insert($aInsert) )
+		if ( $dbCashImg->insert($aInsert) )
 		{
 			// キャッシュ画像ファイルの作成
 			if ( $isTmpDir )
-				$cashPath = $this->m_knUtil->GetTmpCashImagesPath($aInsert['file_name']);
+				$cashPath = $this->m_knUtil->getTmpCashImagesPath($aInsert['file_name']);
 			else
-				$cashPath = $this->m_knUtil->GetCashImagesPath($aInsert['file_name']);
+				$cashPath = $this->m_knUtil->getCashImagesPath($aInsert['file_name']);
 			// ファイルの書き込み
 			$objImage->writeImage($cashPath);
-			
+
 			if ( $isURL )
 			{
 				$objImage->destroy();
-				return $this->GetImageCashUrl().$aInsert['file_name'];
+				return $this->getImageCashUrl().$aInsert['file_name'];
 			}
 			else
 			{
@@ -456,54 +455,57 @@ class plg_ProductImagesAddKN_Img
 		}
 		else
 		{	// DB 挿入失敗
-			return $isURL?$this->DrawErrImageURL(2):$this->DrawErrImage(2);
+			return $isURL?$this->drawErrImageURL(2):$this->drawErrImage(2);
 		}
 		$objImage->destroy();
 		return !$isURL;
 	}
-	
+
 	/**
 	 * すでに登録されているキャッシュ画像の場合は、そのまま表示
 	 * さらに、アクセスしていたら304NotModifiedを出力
-	 * 
-	 * 
+	 *
+	 *
 	 * @param array   $aCashImg  配列
 	 * @param object  $dbCashImg キャッシュ画像DBインスタンス
-	 * @return void
+	 * @return bool
 	 */
-	protected function CashImagePrint(&$aCashImg,&$dbCashImg,$isURL=false)
+	protected function cashImagePrint(&$aCashImg, &$dbCashImg, $isURL=false)
 	{
 		if ( count($aCashImg) != 0 )
 		{
 			if ( $aCashImg['product_id'] > 0 || $aCashImg['img_file'] !== '' )
-				$imgFilePath = $this->m_knUtil->GetCashImagesPath($aCashImg['file_name']);
+				$imgFilePath = $this->m_knUtil->getCashImagesPath($aCashImg['file_name']);
 			else
-				$imgFilePath = $this->m_knUtil->GetTmpCashImagesPath($aCashImg['file_name']);
-				
+				$imgFilePath = $this->m_knUtil->getTmpCashImagesPath($aCashImg['file_name']);
+
 			if ( !file_exists($imgFilePath) )
 			{
-				$dbCashImg->DeleteFromFileName($aCashImg['file_name'],true);
-				return false;	
+				$dbCashImg->deleteFromFileName($aCashImg['file_name'],true);
+				return false;
 			}
 			@touch($imgFilePath);
-				
+
 			if ($isURL)
 			{
-				return $this->GetImageCashUrl().$aCashImg['file_name'];
+				return $this->getImageCashUrl().$aCashImg['file_name'];
 			}
 			else
 			{
 				// 304 NotModifiedチェック			
-				if ( $this->m_knUtil->NotModifiedHeders(filemtime($imgFilePath), $imgFilePath) )
-					return true;
-					
+//				if ( $this->m_knUtil->notModifiedHeaders(filemtime($imgFilePath), $imgFilePath) )
+//					return true;
+
 				$aInfo = @getimagesize($imgFilePath);
-	
-				header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($imgFilePath)).' GMT');
-				$offset = 60 * 60 * 24 * 31;
-				header('Expires: '.gmdate('D, d M Y H:i:s', time() + $offset).' GMT');
-				header("Content-type: ".$aInfo['mime']);
-				echo file_get_contents($imgFilePath);
+//
+//				header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($imgFilePath)).' GMT');
+//				$offset = 60 * 60 * 24 * 31;
+//				header('Expires: '.gmdate('D, d M Y H:i:s', time() + $offset).' GMT');
+				//header("Content-type: ".$aInfo['mime']);
+				header("Content-Type: image/jpeg");
+//				header('Content-Length: ' . filesize($imgFilePath));
+				readfile($imgFilePath);
+				die();
 				return true;
 			}
 		}
@@ -511,32 +513,32 @@ class plg_ProductImagesAddKN_Img
 	}
 	/**
 	 * http[s]://ドメイン/plugin/ProductImagesAddKN/cash_images/ のURLを返す
-	 * 
+	 *
 	 * @return string
 	 */
-	public function GetImageCashUrl()
+	public function getImageCashUrl()
 	{
-		return $this->GetUrl().'plugin/'.$this->m_knUtil->GetPluginName().'/cash_images/';
+		return $this->getUrl().'plugin/'.$this->m_knUtil->getPluginName().'/cash_images/';
 	}
 	/**
 	 * http[s]://ドメイン/ のURLを返す
-	 * 
+	 *
 	 * @return string
 	 */
-	protected function GetUrl()
+	protected function getUrl()
 	{
 		$https = !empty($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'], 'on') === 0;
 		return ($https ? HTTPS_URL : HTTP_URL);
 	}
-	
+
 	/**
 	 * 商品IDとイメージキーから商品画像名を取得する
-	 * 
+	 *
 	 * @param int    $product_id 商品ID
 	 * @param string $img_key    イメージキー名
 	 * @return mixi 取得に失敗した場合はfalseを返し、成功した場合はファイル名を返す
 	 */
-	public function GetImgNameFromImgKeyProductID($product_id,$img_key)
+	public function getImgNameFromImgKeyProductID($product_id,$img_key)
 	{
 		// 商品IDからデフォルト商品画像を取得
 		$aPItem = array('list'=>'main_list_image','main'=>'main_image','large'=>'main_large_image');
@@ -550,7 +552,7 @@ class plg_ProductImagesAddKN_Img
 			if ( count($aCol) > 0 )
 			{
 				$file = $aCol[0]['name'];
-				if (!$this->CheckFileName($file))
+				if (!$this->checkFileName($file))
 					GC_Utils_Ex::gfPrintLog('invalid access :resize_image.php image=' .$file);
 				return SC_Utils_Ex::getSaveImagePath($file);
 			}
@@ -560,17 +562,17 @@ class plg_ProductImagesAddKN_Img
 
 	/**
 	 * GETリクエストからパラメータを解析し、画像を読み込む。
-	 * 
+	 *
 	 * @param LC_Page_EX $objPage LC_Page_ResizeImageのpageオブジェクト
 	 * @return void
 	 */
-	public function ReadImage(&$objPage)
+	public function readImage(&$objPage)
 	{
 		$objFormParam = new plg_ProductImagesAddKN_SC_FormParam_Ex();
-		self::InitParam($objFormParam);
+		self::initParam($objFormParam);
 		$objFormParam->setParam($_GET);
-		
-		
+
+
 		$arrErr = $objFormParam->checkError();
 		if (SC_Utils_Ex::isBlank($arrErr))
 		{
@@ -578,22 +580,22 @@ class plg_ProductImagesAddKN_Img
 
 			$aPara['width'] = intval($aPara['width'])==0?intval($aPara['w']):$aPara['width'];
 			$aPara['height'] =  intval($aPara['height'])==0?intval($aPara['h']):$aPara['height'];
-            $aPara['img_id'] =  intval($aPara['img_id']);
-            $aPara['product_id'] =  intval($aPara['product_id'])==0?intval($aPara['p_id']):$aPara['product_id'];
+			$aPara['img_id'] =  intval($aPara['img_id']);
+			$aPara['product_id'] =  intval($aPara['product_id'])==0?intval($aPara['p_id']):$aPara['product_id'];
 			$aPara['priority'] =  intval($aPara['priority'])==0?intval($aPara['p']):$aPara['priority'];
 			$isFile = true;
 
 			if ( $aPara['image_key'] != "" && $aPara['product_id'] > 0)
 			{
-				if ( ($aPara['src_file'] = $this->GetImgNameFromImgKeyProductID($aPara['product_id'],$aPara['image_key'])) === false )
+				if ( ($aPara['src_file'] = $this->getImgNameFromImgKeyProductID($aPara['product_id'],$aPara['image_key'])) === false )
 				{
-					$this->DrawErrImage(3);
+					$this->drawErrImage(3);
 					exit();
 				}
 			}
 			else if (strlen($aPara['image']) >= 1 && $aPara['image'] !== NO_IMAGE_REALFILE )
 			{
-				if (!$this->CheckFileName($aPara['image']))
+				if (!$this->checkFileName($aPara['image']))
 					GC_Utils_Ex::gfPrintLog('invalid access :resize_image.php image=' . $aPara['image']);
 				$aPara['src_file'] = SC_Utils_Ex::getSaveImagePath($aPara['image']);
 			}
@@ -604,18 +606,17 @@ class plg_ProductImagesAddKN_Img
 			else
 			{
 				// 商品画像を取得する
-				$aPara['src_file'] = $this->GetProductImage($aPara);
+				$aPara['src_file'] = $this->getProductImage($aPara);
 			}
 			// リサイズ画像の出力&ファイルの作成
-			$this->CashImage($aPara,$isFile,false);
+			$this->cashImage($aPara, $isFile, false);
 			exit();
 		}
 		else
 		{
-			$this->DrawErrImage(3);
+			$this->drawErrImage(3);
 			exit();
 		}
 	}
 
 }
-?>
