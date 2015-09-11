@@ -4,7 +4,7 @@
  *
  * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
- * http://www.kaoken.cg0.org/
+ * http://www.kaoken.cg0.xyz/
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -493,17 +493,16 @@ class plg_ProductImagesAddKN_Img
 			else
 			{
 				// 304 NotModifiedチェック			
-//				if ( $this->m_knUtil->notModifiedHeaders(filemtime($imgFilePath), $imgFilePath) )
-//					return true;
+				if ( $this->m_knUtil->notModifiedHeaders(filemtime($imgFilePath), $imgFilePath) )
+					return true;
 
 				$aInfo = @getimagesize($imgFilePath);
-//
-//				header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($imgFilePath)).' GMT');
-//				$offset = 60 * 60 * 24 * 31;
-//				header('Expires: '.gmdate('D, d M Y H:i:s', time() + $offset).' GMT');
-				//header("Content-type: ".$aInfo['mime']);
-				header("Content-Type: image/jpeg");
-//				header('Content-Length: ' . filesize($imgFilePath));
+
+				header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($imgFilePath)).' GMT');
+				$offset = 60 * 60 * 24 * 31;
+				header('Expires: '.gmdate('D, d M Y H:i:s', time() + $offset).' GMT');
+				header("Content-type: ".$aInfo['mime']);
+				header('Content-Length: ' . filesize($imgFilePath));
 				readfile($imgFilePath);
 				die();
 				return true;

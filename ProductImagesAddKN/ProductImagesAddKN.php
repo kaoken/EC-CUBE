@@ -2,9 +2,11 @@
 /*
  * ProductImagesAddKN
  *
+ * File:ProductImageAddKn.php
+ *
  * Copyright(c) kaoken All Rights Reserved.
  *
- * http://www.kaoken.cg0.org/
+ * http://www.kaoken.cg0.xyz/
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -264,7 +266,7 @@ class ProductImagesAddKN extends SC_Plugin_Base
 					$objTransform->select('.thumbnail', 0)->replaceElement(file_get_contents($path));
 				}
 				// 商品登録・編集画面
-				else if (strpos($filename, 'products/product.tpl') !== false){
+				elseif (strpos($filename, 'products/product.tpl') !== false){
 					$path = $knUtil->getTemplatePath('/products/admin','AddImgForm');
 					$objTransform->select('#products .form', 0)->insertAfter(file_get_contents($path));
 				}
@@ -316,6 +318,12 @@ class ProductImagesAddKN extends SC_Plugin_Base
 	 */
 	public function pageAdminProductsActionAfter($objPage)
 	{
+		/**
+		 * @var $knUtil   plg_ProductImagesAddKN_Util
+		 * @var $dbImg    plg_ProductImagesAddKN_DB_ProductImg
+		 * @var $dbCash   plg_ProductImagesAddKN_DB_CashImg
+		 */
+
 		$knUtil = plg_ProductImagesAddKN_Util::getMy();
 
 		$dbImg = $knUtil->getDB('ProductImg');
@@ -362,6 +370,12 @@ class ProductImagesAddKN extends SC_Plugin_Base
 	 */
 	public function pageAdminProductsProductActionAfter( $objPage )
 	{
+		/**
+		 * @var $knUtil   plg_ProductImagesAddKN_Util
+		 * @var $dbImg    plg_ProductImagesAddKN_DB_ProductImg
+		 * @var $dbCash   plg_ProductImagesAddKN_DB_CashImg
+		 * @var $dbTmpID  plg_ProductImagesAddKN_DB_TmpID
+		 */
 		$knUtil = plg_ProductImagesAddKN_Util::getMy();
 		// DB
 		$dbImg = $knUtil->getDB('ProductImg');

@@ -1,9 +1,13 @@
 <!--{*
  * ProductImagesAddKN
  *
+ * File:plg_ProductImagesAddKN_TdMainListImage.tpl
+ *
+ * 説明：商品管理＞商品マスターページの商品検索結果で、商品画像がこのプラグインの画像のみの場合、「商品画像」入れ替える。
+ *
  * Copyright(c) kaoken All Rights Reserved.
  *
- * http://www.kaoken.cg0.org/
+ * http://www.kaoken.cg0.xyz/
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

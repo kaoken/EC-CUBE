@@ -4,7 +4,7 @@
  *
  * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
- * http://www.kaoken.cg0.org/
+ * http://www.kaoken.cg0.xyz/
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,13 +33,21 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/plg_ProductImages
  */
 class plg_ProductImagesAddKN_PageUtil
 {
+	/**
+	 * @var array
+	 */
 	private $m_aCashImg = array();
+	/**
+	 * @var null|plg_ProductImagesAddKN_Img
+	 */
 	private static $m_objImg = null;
 
 	/**
 	 * コンストラクタ
+	 *
+	 * @param null | plg_ProductImagesAddKN_Img $objImg
 	 */
-	public function __construct($objImg=null)
+	public function __construct( $objImg=null )
 	{
 		if ( !is_null($objImg) )
 			$this->m_objImg = $objImg;
@@ -50,8 +58,8 @@ class plg_ProductImagesAddKN_PageUtil
 	/**
 	 * 指定した幅、高さ、画像名からURLを取得
 	 *
-	 * @param int	 $w        幅
-	 * @param int	 $h        高さ
+	 * @param int	  $w        幅
+	 * @param int	  $h        高さ
 	 * @param string $src_file 画像ファイル名
 	 * @return 画像のあるURL
 	 */
@@ -72,7 +80,7 @@ class plg_ProductImagesAddKN_PageUtil
 	 *
 	 * @param int	 $w        幅
 	 * @param int	 $h        高さ
-	 * @param int    $img_id   商品画像ID
+	 * @param int   $img_id   商品画像ID
 	 * @return 画像のあるURL
 	 */
 	public function getUrlFromImgID($w,$h,$img_id)
@@ -93,7 +101,7 @@ class plg_ProductImagesAddKN_PageUtil
 	 * @param int	 $priority   順番
 	 * @return 画像のあるURL
 	 */
-	public function getUrlFromPP($w,$h,$product_id,$priority)
+	public function getUrlFromPP( $w, $h, $product_id, $priority )
 	{
 		$aPara['width'] = $w;
 		$aPara['height'] = $h;
@@ -106,13 +114,13 @@ class plg_ProductImagesAddKN_PageUtil
 	/**
 	 * 指定した幅、高さ、商品ID、順番から商品画像のURLを取得
 	 *
-	 * @param int	 $w          幅
-	 * @param int	 $h          高さ
-	 * @param int	 $product_id 商品ID
+	 * @param int	  $w          幅
+	 * @param int	  $h          高さ
+	 * @param int	  $product_id 商品ID
 	 * @param string $image_key  イメージキー'list'、'main'、'large'のみ
 	 * @return 画像のあるURL
 	 */
-	public function getUrlFromPImgKey($w,$h,$product_id,$image_key)
+	public function getUrlFromPImgKey( $w, $h, $product_id, $image_key )
 	{
 		$aPara['width'] = $w;
 		$aPara['height'] = $h;
@@ -130,10 +138,15 @@ class plg_ProductImagesAddKN_PageUtil
 	 * @param int	 $product_id 商品ID
 	 * @return array
 	 */
-	public function getProductImgData($product_id)
+	public function getProductImgData( $product_id )
 	{
+		/**
+		 * @var $knUtil plg_ProductImagesAddKN_Util
+		 * @var $dbImg  plg_ProductImagesAddKN_DB_ProductImg
+		 */
+
+
 		$knUtil = plg_ProductImagesAddKN_Util::getMy();
-		// DB
 		$dbImg = $knUtil->getDB('ProductImg');
 		// 商品画像をセット
 		$aData = $dbImg->getFromProductID($product_id);

@@ -4,7 +4,7 @@
  *
  * Copyright(c) 2013 kaoken CO.,LTD. All Rights Reserved.
  *
- * http://www.kaoken.cg0.org/
+ * http://www.kaoken.cg0.xyz/
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,7 +33,9 @@ require_once PLUGIN_UPLOAD_REALDIR . 'ProductImagesAddKN/class/plg_ProductImages
  */
 class plg_ProductImagesAddKN_ProductsImgMgr
 {
-	protected $m_UH = null;
+	/**
+	 * @var array コンフィグ配列
+	 */
 	protected $m_aConfig = array();
 	/**
 	 * @var null|plg_ProductImagesAddKN_Img
@@ -43,7 +45,13 @@ class plg_ProductImagesAddKN_ProductsImgMgr
 	 * @var null|plg_ProductImagesAddKN_Util
 	 */
 	protected $m_knUtil = null;
+	/**
+	 * @var bool 初期化したか？
+	 */
 	protected $m_isInit = false;
+	/**
+	 * @var int 商品ID
+	 */
 	protected $m_productID = 0;
 
 
@@ -432,7 +440,8 @@ class plg_ProductImagesAddKN_ProductsImgMgr
 	}
 
 	/**
-	 * @param $aTmp
+	 * 列を作り直す
+	 * @param array $aTmp
 	 */
 	protected function recreateColumn(&$aTmp)
 	{

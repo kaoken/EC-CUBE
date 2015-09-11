@@ -4,7 +4,7 @@
  *
  * Copyright(c) kaoken All Rights Reserved.
  *
- * http://www.kaoken.cg0.org/
+ * http://www.kaoken.cg0.xyz/
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,17 +38,17 @@ class plugin_info{
 	/** プラグイン名(必須)：EC-CUBE上で表示されるプラグイン名. */
 	static $PLUGIN_NAME	  	= "商品に画像を追加する";
 	/** プラグインバージョン(必須)：プラグインのバージョン. */
-	static $PLUGIN_VERSION	= "1.0.2.3";
+	static $PLUGIN_VERSION	= "1.0.2.4";
 	/** 対応バージョン(必須)：対応するEC-CUBEバージョン. */
-	static $COMPLIANT_VERSION = "2.13.2,2.13.3";
+	static $COMPLIANT_VERSION = "2.13.3";
 	/** 作者(必須)：プラグイン作者. */
 	static $AUTHOR			= "kaoken";
 	/** 説明(必須)：プラグインの説明. */
 	static $DESCRIPTION	  	= "商品毎に複数画像を追加できるプラグインです。さらに、リサイズした後の画像を一定期間保存し、読み込みを早くします。\n詳しくはドキュメントを見てください。";
 	/** プラグイン用のサイトURL設定されている場合はプラグイン管理画面のプラグイン名がリンクになります。 */
-	static $PLUGIN_SITE_URL   = "http://www.kaoken.cg0.org/ec-cube%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3%EF%BC%88%EF%BC%91%E3%81%A4%E3%81%AE%E5%95%86%E5%93%81%E3%81%AB%E8%A4%87%E6%95%B0%E3%81%AE%E7%94%BB%E5%83%8F%E3%82%92%E8%BF%BD%E5%8A%A0%EF%BC%89/";
+	static $PLUGIN_SITE_URL   = "http://www.kaoken.cg0.xyz/bbs/viewforum.php?f=7";
 	/** プラグイン作者URL：プラグイン毎に設定出来るURL（説明ページなど） */
-	static $AUTHOR_SITE_URL	= "http://www.kaoken.cg0.org/";
+	static $AUTHOR_SITE_URL	= "http://www.kaoken.cg0.xyz/";
 	/** 使用するフックポイント・コールバック関数。 */
 	static $HOOK_POINTS		= array(
 		array('loadClassFileChange', 'loadClassFileChange'),
